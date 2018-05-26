@@ -2,5 +2,6 @@
 VE/
 *.pyc
 *.sqlite3
-migrations/*
-!migrations/__init__.py
+migrations/
+!__init__.py
+__pycache__/
