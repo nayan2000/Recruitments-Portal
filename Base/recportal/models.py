@@ -22,24 +22,31 @@ class Senior(models.Model):
                     c)  3 = Fourth Year
                     d)  4 = Fifth Year '''
     user = models.OneToOneField(User)
-    team = models.CharField(max_length=10, default='None')
-    seniority_level = models.IntegerField(default=0)
+    team = models.CharField(max_length=10, default='None', blank=True)
+    seniority_level = models.IntegerField(default=0, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Senior Extention Data'
 
     def __str__(self):
-        return self.user.get_full_name
+        return self.user.get_full_name()
 
 class Candidate(models.Model):
     ''' The stand-alone model for each candidate appearing for the department's
         recruitments. It is associated with the Pitch model as a one-to-one relation.'''
     first_name = models.CharField(max_length=50, null=False)
     last_name = models.CharField(max_length=50, null=False)
-    about = models.TextField(default='')
-    skill1 = models.CharField(max_length=100, default='')
-    skill2 = models.CharField(max_length=100, default='')
-    approved = models.BooleanField(default=False)
+    about = models.TextField(default='', blank=True)
+    skill1 = models.CharField(max_length=100, default='', blank=True)
+    skill2 = models.CharField(max_length=100, default='', blank=True)
+    approved = models.BooleanField(default=False, blank=True)
+
+    def get_full_name(self):
+        string = "{} {}".format(self.first_name, self.last_name)
+        return string
 
     def __str__(self):
-        return self.user.first_name + self.user.last_name
+        return self.get_full_name()
 
 class Pitch(models.Model):
     ''' Whenever a candidate appears for recruitments they are surveyed by a senior
@@ -62,20 +69,27 @@ class Pitch(models.Model):
                 c)  App
                 d)  Graphics
                 e)  Video '''
-    team = models.CharField(max_length=10, default='None')
-    task = models.OneToOneField('recportal.Task', null=True)
-    senior = models.ForeignKey('recportal.Senior', related_name='pitches', null=False)
+    team = models.CharField(max_length=10, default='None', blank=True)
+    task = models.OneToOneField('recportal.Task', null=True, blank=True)
+    senior = models.ForeignKey(User, related_name='pitches', null=False)
     candidate = models.ForeignKey('recportal.Candidate', related_name='pitches', null=False)
-    approved = models.BooleanField(default=False)
+    approved = models.BooleanField(default=False, blank=True)
+
+    def __str__(self):
+        string = "{} by  {}".format(self.candidate.get_full_name(), self.senior.get_full_name())
+        return string
 
 class Task(models.Model):
     ''' This model accounts for the task assigned by the senior to the candidate
         and is in a way an extention of th Pitch model. '''
-    title = models.CharField(max_length=100, null=False)
+    title = models.CharField(max_length=50, null=False)
     description = models.TextField(max_length=100, null=False)
     issuing_date = models.DateField(null=False)
-    due_date = models.DateField(null=True)
-    completion_date = models.DateField(null=True)
+    due_date = models.DateField(null=True, blank=True)
+    completion_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return self.title
 
     def is_casual(self):
         ''' Casual tasks are those without any due date. This function will
