@@ -1,7 +1,7 @@
 import datetime
 
 from django.db import models
-from django.contib.auth.models import User
+from django.contrib.auth.models import User
 
 class Senior(models.Model):
     ''' A user extention model for the seniors of the department who would
@@ -66,15 +66,15 @@ class Pitch(models.Model):
     task = models.OneToOneField('recportal.Task', null=True)
     senior = models.ForeignKey('recportal.Senior', related_name='pitches', null=False)
     candidate = models.ForeignKey('recportal.Candidate', related_name='pitches', null=False)
-    approved = model.BooleanField(default=False)
+    approved = models.BooleanField(default=False)
 
 class Task(models.Model):
     ''' This model accounts for the task assigned by the senior to the candidate
         and is in a way an extention of th Pitch model. '''
     title = models.CharField(max_length=100, null=False)
     description = models.TextField(max_length=100, null=False)
-    issuing_date = models.DateField(default=datetime.date.today(), null=False)
-    due_date = models.DateField(default=datetime.date.today() + datetime.timedelta(days=7), null=True)
+    issuing_date = models.DateField(null=False)
+    due_date = models.DateField(null=True)
     completion_date = models.DateField(null=True)
 
     def is_casual(self):
