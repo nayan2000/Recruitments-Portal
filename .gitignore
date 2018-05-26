@@ -1,0 +1,4 @@
+*_secret.*
+VE/
+*.pyc
+*.sqlite3
