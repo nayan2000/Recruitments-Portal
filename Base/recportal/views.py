@@ -32,7 +32,7 @@ def SignIn(request):
             return redirect('recportal:signin')
         else:
             login(request, user)
-            return redirect('recportal:signout')    # for now, till a home page is made
+            return redirect('recportal:home')
 
     else:
         ''' ideal, this should never be triggered '''
@@ -42,3 +42,14 @@ def SignOut(request):
     logout(request)
     messages.add_message(request, messages.INFO, 'Signed out successfully.')
     return redirect('recportal:signin')
+
+@login_required
+def Home(request):
+    ''' the first page you go to after logging in '''
+
+    if request.method == 'GET':
+        context = {}
+        return render(request, 'recportal/home.html', context)
+
+    else:
+        return JsonResponse({'error_message':'Invalid request method.'})

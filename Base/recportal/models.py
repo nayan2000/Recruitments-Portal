@@ -33,13 +33,15 @@ class Senior(models.Model):
 
 class Candidate(models.Model):
     ''' The stand-alone model for each candidate appearing for the department's
-        recruitments. It is associated with the Pitch model as a one-to-one relation.'''
+        recruitments. It is associated with the Pitch model as a one-to-one relation.
+        recommended is for the recommendations feature'''
     first_name = models.CharField(max_length=50, null=False)
     last_name = models.CharField(max_length=50, null=False)
     about = models.TextField(default='', blank=True)
     skill1 = models.CharField(max_length=100, default='', blank=True)
     skill2 = models.CharField(max_length=100, default='', blank=True)
     approved = models.BooleanField(default=False, blank=True)
+    recommended = models.ManyToManyField(User, related_name='recommended_candidates')
 
     def get_full_name(self):
         string = "{} {}".format(self.first_name, self.last_name)

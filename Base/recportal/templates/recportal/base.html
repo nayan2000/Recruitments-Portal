@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  {% block title %}{% endblock %}
+  {% load static %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+  <script>
+       $(document).ready(function(){
+         $(".dropdown-trigger").dropdown({ hover: true });
+       });
+  </script>
+</head>
+
+<body class="grey lighten-3">
+
+  <ul id="tasks_dropdown" class="dropdown-content">
+   <li><a href="#!">View</a></li>
+   <li><a href="#!">Assign</a></li>
+ </ul>
+
+ <nav class="blue darken-4">
+   <div class="nav-wrapper">
+     <a href="{% url 'recportal:home' %}" class="brand-logo">Recruitments Portal</a>
+     <ul class="right hide-on-med-and-down">
+       <li><a class="dropdown-trigger" href="#!" data-target="tasks_dropdown">Tasks<i class="material-icons right">arrow_drop_down</i></a></li>
+       <li><a href="#!">Candidates</a></li>
+       <li><a href="badges.html">Senior Panel</a></li>
+     </ul>
+   </div>
+ </nav>
+
+  {% block content %}
+  {% endblock %}
+
+</body>
+
+</html>

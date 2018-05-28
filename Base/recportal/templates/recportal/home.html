@@ -1,0 +1,9 @@
+{% extends 'recportal/base.html' %}
+
+{% block title %}
+  <title> Recruitments Portal -- Home Page </title>
+{% endblock %}
+
+{% block content %}
+  <h2> Welcome {{request.user.get_full_name.title}}. </h2>
+{% endblock %}
