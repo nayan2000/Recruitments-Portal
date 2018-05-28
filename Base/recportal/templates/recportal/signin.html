@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+  <title> Recruitments Portal -- Sign In </title>
+  {% load static %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script> -->
+  <style>
+      table
+      {
+          border-collapse: separate;
+          border-spacing: 50px;
+      }
+
+      td
+      {
+        vertical-align: top;
+        padding: 30px;
+      }
+
+      body
+      {
+        background-image: url("{% static 'recportal/Background.jpg' %}");
+        background-repeat: no-repeat;
+        background-size: 100%;
+        background-attachment: fixed;
+      }
+
+      #main
+      {
+        opacity: 0.7;
+      }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1 class="center-align white-text"> Recruitments Portal Sign In </h1>
+  </div>
+
+  <br><br>
+
+  <div class="container blue lighten-3" id="main">
+
+      <form action="{% url 'recportal:signin' %}" method="post">
+      {% csrf_token %}
+
+      <table class="center-align">
+
+        <tr>
+          <td> <label for="username"> Username: </label> </td>
+          <td> <input type="text" name="username" maxlength=100 required /> </td>
+        </tr>
+
+        <tr>
+          <td> <label for="password"> Password: </label> </td>
+          <td> <input type="password" name="password" maxlength=100 required /> </td>
+        </tr>
+
+      </table>
+
+      <div class="center-align">
+        <input type="submit" value="Sign In" class="btn blue darken-4"/>
+      </div>
+
+      {% if messages %}
+        {% for message in messages %}{% if forloop.counter == 1 %}
+          <div class="center-align">
+            {% if message.tags == 'error' %}
+              <p class="red-text"><i> {{ message }} </i></p>
+            {% else %}
+              <p class="green-text"><i> {{ message }} </i></p>
+            {% endif %}
+          </div>
+          <br>
+        {% endif %}{% endfor %}
+      {% else %}
+        <br><br>
+      {% endif %}
+
+  </div>
+
+    <br><br><br>
+
+</body>
+
+
+</html>
