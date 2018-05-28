@@ -31,6 +31,18 @@ class Senior(models.Model):
     def __str__(self):
         return self.user.get_full_name()
 
+    def generateRecommendations(self):
+        ''' return a dictionary where keys are candidates and the values are lists
+            are recommending seniors. The senior parameter is the recommended senior. '''
+        payload = {}
+        for recommendation in self.user.recommended.all():
+            if recommendation.candidate not in payload.keys():
+                payload[recommendation.candidate] = [recommendation.recommending_senior]
+            else:
+                payload[recommendation.candidate].append(recommendation.recommending_senior)
+        return payload
+
+
 class Candidate(models.Model):
     ''' The stand-alone model for each candidate appearing for the department's
         recruitments. It is associated with the Pitch model as a one-to-one relation.
@@ -41,8 +53,6 @@ class Candidate(models.Model):
     skill1 = models.CharField(max_length=100, default='', blank=True)
     skill2 = models.CharField(max_length=100, default='', blank=True)
     approved = models.BooleanField(default=False, blank=True)
-    recommended = models.ManyToManyField(User, related_name='recommended_candidates')
-
     def get_full_name(self):
         string = "{} {}".format(self.first_name, self.last_name)
         return string
@@ -120,3 +130,17 @@ class Task(models.Model):
                     return False
                 else:
                     return True
+
+class Recommendation(models.Model):
+    ''' To enable the recommendations feature we use this model. Seniors can
+         recommend candidates to other seniors who can either accept to interview
+         or the candidate or decline. Several much-needed methods are provided.
+         (desc provided with each method)  '''
+    status = models.BooleanField(default=False) # accepted to interview or not
+    candidate = models.ForeignKey('recportal.Candidate', related_name="candidates", null=False)
+    recommending_senior = models.ForeignKey(User, related_name='recommendations_made', null=False)
+    recommended_seniors = models.ForeignKey(User, related_name='recommended', null=False)
+
+    def __str__(self):
+        string = "{} to {}".format(self.candidate.first_name, self.recommended_seniors.first_name)
+        return string

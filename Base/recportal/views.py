@@ -49,6 +49,8 @@ def Home(request):
 
     if request.method == 'GET':
         context = {}
+        context["data"] = request.user.senior.generateRecommendations()
+        print(context)
         return render(request, 'recportal/home.html', context)
 
     else:

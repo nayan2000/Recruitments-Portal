@@ -6,4 +6,12 @@
 
 {% block content %}
   <h2> Welcome {{request.user.get_full_name.title}}. </h2>
+  <div>
+    <h4> Here are some recommendations </h4>
+    {% for candidate, seniors_list in data.items %}
+    <div>
+      <p>{{candidate.first_name}} {{candidate.last_name}} was recommended to you by {% for senior in seniors_list %}{{senior.first_name}} {% endfor %} </p>
+    </div>
+    {% endfor %}
+  <div>
 {% endblock %}
