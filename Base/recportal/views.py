@@ -65,36 +65,47 @@ def Recommendations(request):
         context['data'] = request.user.senior.getActiveRecommendations()
         return render(request, 'recportal/recommendations.html', context)
 
-@login_required
-def UpdateRecommendations(request):
-    for key in request.POST:
-        if key.split('.')[0] == 'candidate':
-            name = key.split('.')[1]
-            first_name = name.split(' ')[0]
-            last_name = name.split(' ')[1]
-            try:
-                candidate = Candidate.objects.get(first_name=first_name, last_name=last_name)
-                recommendations = Recommendation.objects.filter(candidate=candidate, recommended_senior=request.user)
+    if request.method == 'POST':
+        for key in request.POST:
+            if key.split('.')[0] == 'candidate':
+                name = key.split('.')[1]
+                first_name = name.split(' ')[0]
+                last_name = name.split(' ')[1]
+                try:
+                    candidate = Candidate.objects.get(first_name=first_name, last_name=last_name)
+                    recommendations = Recommendation.objects.filter(candidate=candidate, recommended_senior=request.user)
 
-                if request.POST[key] == 'accepted':
-                    for recommendation in recommendations:
-                        recommendation.status = True
-                        recommendation.save()
-                elif request.POST[key] == 'declined':
-                    for recommendation in recommendations:
-                        recommendation.delete()
-                else: # neutral
+                    if request.POST[key] == 'accepted':
+                        for recommendation in recommendations:
+                            recommendation.status = True
+                            recommendation.save()
+                    elif request.POST[key] == 'declined':
+                        for recommendation in recommendations:
+                            recommendation.delete()
+                    else: # neutral
+                        pass
+
+                except Exception as error:
+                    print(error)
+                    print('not found: \"{} {}\"'.format(first_name, last_name))
                     pass
 
-            except Exception as error:
-                print(error)
-                print('not found: \"{} {}\"'.format(first_name, last_name))
-                pass
-
-    return redirect('recportal:recommendations')
+        return redirect('recportal:recommendations')
 
 @login_required
 def MyCandidates(request):
     context = {}
-    context['data'] = request.user.getCandidates()
-    return HttpResponse(context)
+    context['data'] = request.user.senior.getCandidates()
+    return render(request, 'recportal/mycandidates.html', context)
+
+@login_required
+def Candidates(request):
+    context = {}
+    context['data'] = Candidate.objects.all()
+    return render(request, 'recportal/candidates.html', context)
+
+@login_required
+def CandidateProfile(request, first_name, last_name):
+    context = {}
+    context['candidate'] = Candidate.objects.get(first_name=first_name, last_name=last_name)
+    return render(request, 'recportal/profile.html', context)

@@ -48,7 +48,7 @@
 {% endblock %}
 
 {% block content %}
-  <form action="{% url 'recportal:updaterecommendations' %}" method="post">
+  <form action="{% url 'recportal:recommendations' %}" method="post">
     {% csrf_token %}
   <div>
     {% if data %}

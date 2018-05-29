@@ -46,7 +46,7 @@ class Senior(models.Model):
     def getCandidates(self):
         payload = set()
         for recommendation in self.user.recommended.all():
-            if recommentation.status == True:
+            if recommendation.status == True:
                 payload.add(recommendation.candidate)
         return payload
 
@@ -60,12 +60,13 @@ class Candidate(models.Model):
     skill1 = models.CharField(max_length=100, default='', blank=True)
     skill2 = models.CharField(max_length=100, default='', blank=True)
     approved = models.BooleanField(default=False, blank=True)
-    def get_full_name(self):
-        string = "{} {}".format(self.first_name, self.last_name)
-        return string
 
     def __str__(self):
         return self.get_full_name()
+
+    def get_full_name(self):
+        string = "{} {}".format(self.first_name, self.last_name)
+        return string
 
 class Pitch(models.Model):
     ''' Whenever a candidate appears for recruitments they are surveyed by a senior
@@ -141,8 +142,7 @@ class Task(models.Model):
 class Recommendation(models.Model):
     ''' To enable the recommendations feature we use this model. Seniors can
          recommend candidates to other seniors who can either accept to interview
-         or the candidate or decline. Several much-needed methods are provided.
-         (desc provided with each method)  '''
+         or the candidate or decline. '''
     status = models.BooleanField(default=False) # accepted to interview or pending recommendation
     reason = models.TextField(default="Just like that")
     candidate = models.ForeignKey('recportal.Candidate', related_name="candidates", null=False)

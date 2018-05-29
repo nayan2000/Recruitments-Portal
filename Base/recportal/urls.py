@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^signout/$', views.SignOut, name='signout'),
     url(r'^home/$', views.Home, name='home'),
     url(r'^recommendations/$', views.Recommendations, name='recommendations'),
-    url(r'^update-recommendations/$', views.UpdateRecommendations, name='updaterecommendations'),
     url(r'^my-candidates/$', views.MyCandidates, name='mycandidates'),
+    url(r'^candidates/$', views.Candidates, name='candidates'),
+    url(r'^profile/(?P<first_name>[A-Za-z]+)-(?P<last_name>[A-Za-z]+)', views.CandidateProfile, name='profile'),
 ]

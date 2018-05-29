@@ -1,0 +1,33 @@
+{% extends 'recportal/base.html' %}
+
+{% block title %}
+  <title> Recruitments Portal -- Candidates </title>
+{% endblock %}
+
+{% block content %}
+
+
+    <br>
+    <div class="container blue lighten-4 ">
+      <table>
+
+        <tr>
+          <td colspan="2"> Name </td>
+          <td> Skill 1 </td>
+          <td> Skill 2 </td>
+          <td> About </td>
+        </tr>
+
+        {% for candidate in data %}
+        <tr {% if forloop.counter0|divisibleby:2 %} class="teal lighten-5" {% else %} class="teal lighten-4" {% endif %}>
+          <td colspan="2"><a href="{% url 'recportal:profile' candidate.first_name candidate.last_name %}"> {{candidate.first_name}} {{candidate.last_name}} </a> </td>
+          <td> {{ candidate.skill1 }} </td>
+          <td> {{ candidate.skill2 }} </td>
+          <td colspan="3"> {{candidate.about}} </td>
+        </tr>
+        {% endfor %}
+
+      <table>
+    </div>
+
+{% endblock %}
