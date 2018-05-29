@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 
+from recportal.models import *
 
 def SignIn(request):
     if request.method == 'GET':
@@ -48,10 +49,52 @@ def Home(request):
     ''' the first page you go to after logging in '''
 
     if request.method == 'GET':
-        context = {}
-        context["data"] = request.user.senior.generateRecommendations()
-        print(context)
-        return render(request, 'recportal/home.html', context)
+        return render(request, 'recportal/home.html')
 
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
+
+@login_required
+def Recommendations(request):
+    ''' A page where you can view your recommendations made by other seniors.
+        A page under the "Senior Panel" tabs on the page (see base.html in
+        recportal/templates) '''
+
+    if request.method == 'GET':
+        context = {}
+        context['data'] = request.user.senior.getActiveRecommendations()
+        return render(request, 'recportal/recommendations.html', context)
+
+@login_required
+def UpdateRecommendations(request):
+    for key in request.POST:
+        if key.split('.')[0] == 'candidate':
+            name = key.split('.')[1]
+            first_name = name.split(' ')[0]
+            last_name = name.split(' ')[1]
+            try:
+                candidate = Candidate.objects.get(first_name=first_name, last_name=last_name)
+                recommendations = Recommendation.objects.filter(candidate=candidate, recommended_senior=request.user)
+
+                if request.POST[key] == 'accepted':
+                    for recommendation in recommendations:
+                        recommendation.status = True
+                        recommendation.save()
+                elif request.POST[key] == 'declined':
+                    for recommendation in recommendations:
+                        recommendation.delete()
+                else: # neutral
+                    pass
+
+            except Exception as error:
+                print(error)
+                print('not found: \"{} {}\"'.format(first_name, last_name))
+                pass
+
+    return redirect('recportal:recommendations')
+
+@login_required
+def MyCandidates(request):
+    context = {}
+    context['data'] = request.user.getCandidates()
+    return HttpResponse(context)

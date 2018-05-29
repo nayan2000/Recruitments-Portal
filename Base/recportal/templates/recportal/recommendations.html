@@ -1,0 +1,111 @@
+{% extends 'recportal/base.html' %}
+
+{% block title %}
+  <title> Recruitments Portal -- Recommendations </title>
+  <style>
+    div
+      {
+        font-size: 18px !important;
+      }
+  </style>
+  <script>
+    function acceptRecommendation(div_id)
+    {
+      element = document.getElementById(div_id);
+      input = document.getElementById(div_id + '-inp');
+      if(element.getAttribute('data-mode') != 'accepted')
+      {
+        element.setAttribute('class', 'container green lighten-1');
+        element.setAttribute('data-mode', 'accepted');
+        input.setAttribute('value', 'accepted');
+      }
+      else
+      {
+        element.setAttribute('class', 'container grey lighten-2');
+        element.setAttribute('data-mode', 'neutral');
+        input.setAttribute('value', 'neutral');
+      }
+    }
+
+    function declineRecommendation(div_id)
+    {
+      element = document.getElementById(div_id);
+      input = document.getElementById(div_id + '-inp');
+      if(element.getAttribute('data-mode') != 'declined')
+      {
+        element.setAttribute('class', 'container red accent-4');
+        element.setAttribute('data-mode', 'declined');
+        input.setAttribute('value', 'declined');
+      }
+      else
+      {
+        element.setAttribute('class', 'container grey lighten-2');
+        element.setAttribute('data-mode', 'neutral');
+        input.setAttribute('value', 'neutral');
+      }
+    }
+  </script>
+{% endblock %}
+
+{% block content %}
+  <form action="{% url 'recportal:updaterecommendations' %}" method="post">
+    {% csrf_token %}
+  <div>
+    {% if data %}
+      <h4> Here are some pending recommendations </h4>
+    <br>
+
+    {% for candidate, recommendations_tuple_list in data.items %}
+    <div class="container grey lighten-2" id="{{candidate}}" data-mode="neutral">
+    <input type="hidden" name="candidate.{{candidate}}" value="neutral" id="{{candidate}}-inp"/>
+
+      <table class="striped">
+        <tr class="blue darken-2">
+          <td>Candidate: </td>
+          <td> {{candidate.first_name}} {{candidate.last_name}} </td>
+        </tr>
+      </table>
+
+      <br>
+
+      <table>
+        <thead class="cyan lighten-4">
+          <td> Recommending Senior(s): </td>
+          <td> Reason(s): </td>
+        </thead>
+        {% for recommendation in recommendations_tuple_list %}
+        {% if forloop.counter0|divisibleby:2 %}
+          <tr class="cyan lighten-3">
+        {% else %}
+          <tr class="cyan lighten-4">
+        {% endif %}
+          <td>{{recommendation.0}}</td>
+          <td>{{recommendation.1}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+
+      <br>
+
+      <table>
+        <tr>
+          <td class="center-align"> <a class="btn green hoverable" onclick="acceptRecommendation('{{candidate}}')"> Accept </a> </td>
+          <td class="center-align"> <a class="btn red hoverable" onclick="declineRecommendation('{{candidate}}')"> Decline </a> </td>
+        </tr>
+      </table>
+
+    </div>
+    <br><br>
+    {% endfor %}
+
+    <div class="center-align"><input type="submit" class="btn-large hoverable blue darken-4" value="Update"></div>
+
+  </div>
+  </form>
+
+  {% else %}
+    <h4> You have no pending recommendations </h4>
+  {% endif %}
+
+  <br>
+{% endblock %}

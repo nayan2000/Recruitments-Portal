@@ -31,17 +31,24 @@ class Senior(models.Model):
     def __str__(self):
         return self.user.get_full_name()
 
-    def generateRecommendations(self):
+    def getActiveRecommendations(self):
         ''' return a dictionary where keys are candidates and the values are lists
-            are recommending seniors. The senior parameter is the recommended senior. '''
+            of tuples of (recommending seniors, reason for recommendation). The senior parameter is the recommended senior. '''
         payload = {}
         for recommendation in self.user.recommended.all():
-            if recommendation.candidate not in payload.keys():
-                payload[recommendation.candidate] = [recommendation.recommending_senior]
-            else:
-                payload[recommendation.candidate].append(recommendation.recommending_senior)
+            if recommendation.status == False:
+                if recommendation.candidate not in payload.keys():
+                    payload[recommendation.candidate] = [(recommendation.recommending_senior, recommendation.reason)]
+                else:
+                    payload[recommendation.candidate].append((recommendation.recommending_senior, recommendation.reason))
         return payload
 
+    def getCandidates(self):
+        payload = set()
+        for recommendation in self.user.recommended.all():
+            if recommentation.status == True:
+                payload.add(recommendation.candidate)
+        return payload
 
 class Candidate(models.Model):
     ''' The stand-alone model for each candidate appearing for the department's
@@ -136,11 +143,12 @@ class Recommendation(models.Model):
          recommend candidates to other seniors who can either accept to interview
          or the candidate or decline. Several much-needed methods are provided.
          (desc provided with each method)  '''
-    status = models.BooleanField(default=False) # accepted to interview or not
+    status = models.BooleanField(default=False) # accepted to interview or pending recommendation
+    reason = models.TextField(default="Just like that")
     candidate = models.ForeignKey('recportal.Candidate', related_name="candidates", null=False)
     recommending_senior = models.ForeignKey(User, related_name='recommendations_made', null=False)
-    recommended_seniors = models.ForeignKey(User, related_name='recommended', null=False)
+    recommended_senior = models.ForeignKey(User, related_name='recommended', null=False)
 
     def __str__(self):
-        string = "{} to {}".format(self.candidate.first_name, self.recommended_seniors.first_name)
+        string = "{} to {}".format(self.candidate.first_name, self.recommended_senior.first_name)
         return string
