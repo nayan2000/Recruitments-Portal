@@ -21,10 +21,10 @@
 
 <body class="grey lighten-3">
 
-  <ul id="tasks_dropdown" class="dropdown-content">
+  <!-- <ul id="tasks_dropdown" class="dropdown-content">
    <li><a href="#!">View</a></li>
    <li><a href="#!">Assign</a></li>
- </ul>
+ </ul> -->
 
  <ul id="senior_dropdown" class="dropdown-content">
   <li><a href="{% url 'recportal:mycandidates' %}">My Candidates</a></li>
@@ -36,8 +36,8 @@
    <div class="nav-wrapper">
      <a href="{% url 'recportal:home' %}" class="brand-logo">Recruitments Portal</a>
      <ul class="right hide-on-med-and-down">
-       <li><a class="dropdown-trigger" data-target="tasks_dropdown">Tasks<i class="material-icons right">arrow_drop_down</i></a></li>
        <li><a href="{% url 'recportal:candidates' %}">Candidates</a></li>
+       <!-- <li><a class="dropdown-trigger" data-target="tasks_dropdown">Tasks<i class="material-icons right">arrow_drop_down</i></a></li> -->
        <li><a class="dropdown-trigger" data-target="senior_dropdown">Senior Panel<i class="material-icons right">arrow_drop_down</i></a></li>
        <li><a href="{% url 'recportal:signout' %}">Signout</a></li>
      </ul>

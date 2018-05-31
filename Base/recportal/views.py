@@ -8,6 +8,34 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from recportal.models import *
 
+@login_required
+def Candidates(request):
+    context = {}
+    context['data'] = Candidate.objects.all()
+    return render(request, 'recportal/candidates.html', context)
+
+@login_required
+def CandidateProfile(request, first_name, last_name):
+    context = {}
+    context['candidate'] = Candidate.objects.get(first_name=first_name, last_name=last_name)
+    return render(request, 'recportal/profile.html', context)
+
+@login_required
+def Home(request):
+    ''' the first page you go to after logging in '''
+
+    if request.method == 'GET':
+        return render(request, 'recportal/home.html')
+
+    else:
+        return JsonResponse({'error_message':'Invalid request method.'})
+
+@login_required
+def MyCandidates(request):
+    context = {}
+    context['data'] = request.user.senior.getCandidates()
+    return render(request, 'recportal/mycandidates.html', context)
+
 def SignIn(request):
     if request.method == 'GET':
         ''' Render the signin page '''
@@ -37,21 +65,6 @@ def SignIn(request):
 
     else:
         ''' ideal, this should never be triggered '''
-        return JsonResponse({'error_message':'Invalid request method.'})
-
-def SignOut(request):
-    logout(request)
-    messages.add_message(request, messages.INFO, 'Signed out successfully.')
-    return redirect('recportal:signin')
-
-@login_required
-def Home(request):
-    ''' the first page you go to after logging in '''
-
-    if request.method == 'GET':
-        return render(request, 'recportal/home.html')
-
-    else:
         return JsonResponse({'error_message':'Invalid request method.'})
 
 @login_required
@@ -92,20 +105,7 @@ def Recommendations(request):
 
         return redirect('recportal:recommendations')
 
-@login_required
-def MyCandidates(request):
-    context = {}
-    context['data'] = request.user.senior.getCandidates()
-    return render(request, 'recportal/mycandidates.html', context)
-
-@login_required
-def Candidates(request):
-    context = {}
-    context['data'] = Candidate.objects.all()
-    return render(request, 'recportal/candidates.html', context)
-
-@login_required
-def CandidateProfile(request, first_name, last_name):
-    context = {}
-    context['candidate'] = Candidate.objects.get(first_name=first_name, last_name=last_name)
-    return render(request, 'recportal/profile.html', context)
+def SignOut(request):
+    logout(request)
+    messages.add_message(request, messages.INFO, 'Signed out successfully.')
+    return redirect('recportal:signin')
