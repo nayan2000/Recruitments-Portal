@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
@@ -10,15 +12,27 @@ from recportal.models import *
 
 @login_required
 def Candidates(request):
-    context = {}
-    context['data'] = Candidate.objects.all()
-    return render(request, 'recportal/candidates.html', context)
+    ''' the view to render the candidates page '''
+
+    if request.method == 'GET':
+        context = {}
+        context['data'] = Candidate.objects.all()
+        return render(request, 'recportal/candidates.html', context)
+
+    else:
+        return JsonResponse({'error_message':'Invalid request method.'})
 
 @login_required
 def CandidateProfile(request, first_name, last_name):
-    context = {}
-    context['candidate'] = Candidate.objects.get(first_name=first_name, last_name=last_name)
-    return render(request, 'recportal/profile.html', context)
+    ''' the induvisual profile page for each candidate '''
+
+    if request.method == 'GET':
+        context = {}
+        context['candidate'] = get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
+        return render(request, 'recportal/profile.html', context)
+
+    else:
+        return JsonResponse({'error_message':'Invalid request method.'})
 
 @login_required
 def Home(request):
@@ -32,39 +46,79 @@ def Home(request):
 
 @login_required
 def MyCandidates(request):
-    context = {}
-    context['data'] = request.user.senior.getCandidates()
-    return render(request, 'recportal/mycandidates.html', context)
+    ''' the view to render the mycandidates page '''
 
-def SignIn(request):
     if request.method == 'GET':
-        ''' Render the signin page '''
         context = {}
-        return render(request, 'recportal/signin.html', context)
-
-    if request.method == 'POST':
-        ''' validate the provided credentials and login the user if valid else
-            return to the same page with a corresponding error message. '''
-        try:
-            username=request.POST['username']
-            password=request.POST['password']
-            if username == '' or password == '':
-                raise KeyError
-        except KeyError:
-            messages.add_message(request, messages.ERROR, 'Sign in credentials missing.')
-            return redirect('recportal:signin')
-
-        user = authenticate(username=username, password=password)
-
-        if user == None:
-            messages.add_message(request, messages.ERROR, 'Invalid credentials.')
-            return redirect('recportal:signin')
-        else:
-            login(request, user)
-            return redirect('recportal:home')
+        context['data'] = request.user.senior.getCandidates()
+        return render(request, 'recportal/mycandidates.html', context)
 
     else:
-        ''' ideal, this should never be triggered '''
+        return JsonResponse({'error_message':'Invalid request method.'})
+
+@login_required
+def PitchCandidate(request, first_name, last_name):
+    ''' the view for the form to pitch candidates '''
+
+    if request.method == 'GET':
+        context = {}
+        context['candidate'] = get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
+        return render(request, 'recportal/pitch.html', context)
+
+    if request.method == 'POST':
+        # don't forget to make a verification script
+        data = request.POST
+        # first, don't let the same senior pitch the same candidate
+        try:
+            candidate= get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
+            p = Pitch.objects.get(candidate=candidate, senior=request.user)
+            if p:
+                messages.add_message(request, messages.ERROR, 'You have already pitched this candidate', extra_tags="pitch")
+            return redirect('recportal:profile', first_name=first_name, last_name=last_name)
+        except:
+            pass
+        # then, make sure that all of the data is valid and create the new pitch
+        try:
+            team = data['team']
+            title = data['title']
+            desc = data['description']
+            isd = datetime.datetime.strptime(data['issuing_date'], '%Y-%m-%d')
+            try:
+                dd = datetime.datetime.strptime(data['due_date'], '%Y-%m-%d')
+                task = Task.objects.create(title=title, description=desc, issuing_date=isd, due_date=dd)
+            except:
+                task = Task.objects.create(title=title, description=desc, issuing_date=isd)
+            pitch = Pitch.objects.create(team=team, task=task, senior=request.user ,candidate=candidate)
+            if pitch:
+                messages.add_message(request, messages.INFO, 'Pitched successfully!', extra_tags="pitch")
+
+            # one last thing to do is to self recommend the candidate so that s/he is in 'MyCandidates'
+            # if they previously accepted a recommendation, just ignore it, otherwise make one
+            try:
+                Recommendation.objects.get(candidate=candidate, recommended_senior=request.user)
+            except:
+                Recommendation.objects.create(status=True, reason='Pitched by self', candidate=candidate, recommending_senior=request.user, recommended_senior=request.user )
+
+            # finally, redirect them to the profile page along with the message
+            return redirect('recportal:profile', first_name=first_name, last_name=last_name)
+
+        except Exception as error:
+            print(error)
+            return HttpResponse('missing credentials.')
+
+    else:
+        return JsonResponse({'error_message':'Invalid request method.'})
+
+@login_required
+def RecommendCandidate(request, first_name, last_name):
+    ''' the view for the form to recommend candidates to other seniors '''
+
+    if request.method == 'GET':
+        context = {}
+        context['candidate'] = get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
+        return render(request, 'recportal/recommend.html', context)
+
+    else:
         return JsonResponse({'error_message':'Invalid request method.'})
 
 @login_required
@@ -99,13 +153,47 @@ def Recommendations(request):
                         pass
 
                 except Exception as error:
-                    print(error)
-                    print('not found: \"{} {}\"'.format(first_name, last_name))
                     pass
 
         return redirect('recportal:recommendations')
 
+def SignIn(request):
+    if request.method == 'GET':
+        ''' Render the signin page '''
+        context = {}
+        return render(request, 'recportal/signin.html', context)
+
+    if request.method == 'POST':
+        ''' validate the provided credentials and login the user if valid else
+            return to the same page with a corresponding error message. '''
+        try:
+            username=request.POST['username']
+            password=request.POST['password']
+            if username == '' or password == '':
+                raise KeyError
+        except KeyError:
+            messages.add_message(request, messages.ERROR, 'Sign in credentials missing.')
+            return redirect('recportal:signin')
+
+        user = authenticate(username=username, password=password)
+
+        if user == None:
+            messages.add_message(request, messages.ERROR, 'Invalid credentials.')
+            return redirect('recportal:signin')
+        else:
+            login(request, user)
+            return redirect('recportal:home')
+
+    else:
+        ''' ideal, this should never be triggered '''
+        return JsonResponse({'error_message':'Invalid request method.'})
+
 def SignOut(request):
-    logout(request)
-    messages.add_message(request, messages.INFO, 'Signed out successfully.')
-    return redirect('recportal:signin')
+
+    if request.method == 'GET':
+        logout(request)
+        messages.add_message(request, messages.INFO, 'Signed out successfully.')
+        return redirect('recportal:signin')
+
+    else:
+        return JsonResponse({'error_message':'Invalid request method.'})

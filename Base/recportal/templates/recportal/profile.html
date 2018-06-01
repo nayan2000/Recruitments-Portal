@@ -2,10 +2,132 @@
 
 {% block title %}
   <title> Recruitments Portal -- {{candidate.first_name}} {{candidate.last_name}} </title>
+  <style>
+    .no_border
+    {
+      margin: 0!important;;
+      padding: 0!important;
+      border: 0!important;
+      box-shadow: none!important;
+    }
+    .padded
+    {
+      padding-right: 100px !important;
+      padding-left: 100px !important;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
-  <p> yet to decide on page design... </p>
-  <p> should probably involve tasks and pitches... </p>
-  <p> here's the candidate's name: {{candidate.first_name}} {{candidate.last_name}} </p>
+
+  <br>
+  <div name="info" class="container">
+    <table>
+
+      <tr>
+        <td class="center-align teal lighten-3" colspan="2"><h4><b><i>{{candidate.first_name}} {{candidate.last_name}}</i></b></h4></td>
+      </tr>
+
+      <tr>
+        <td rowspan="2" width="50%" class="center-align teal lighten-5"><b> About: </b><br>{{candidate.about}}</td>
+        <td class="center-align teal lighten-5"><b> Skill 1:</b>   {{candidate.skill1}}</td>
+      </tr>
+
+      <tr>
+        <td class="center-align teal lighten-5"><b> Skill 2:</b>   {{candidate.skill2}}</td>
+      </tr>
+
+    </table>
+  </div>
+
+  <br>
+
+  <div name="action" class="container">
+    <table>
+      <tr class="no_border">
+        <td class="center-align"><a href="{% url 'recportal:pitch' first_name=candidate.first_name last_name=candidate.last_name %}" class="btn-large hoverable"> Pitch </a></td>
+        <td class="center-align"><a href="{% url 'recportal:recommend' first_name=candidate.first_name last_name=candidate.last_name %}" class="btn-large hoverable"> Recommend </a></td>
+      </tr>
+      {% if messages %}
+        <tr class="no_border">
+              <td>
+            {% for message in messages %}{% if forloop.counter == 1 %}
+              <div class="center-align">
+                {% if message.tags == 'pitch error' %}
+                  <p class="red-text"><i> {{ message }} </i></p>
+                {% elif message.tags == 'pitch info' %}
+                  <p class="green-text"><i> {{ message }} </i></p>
+                {% endif %}
+              </div>
+            {% endif %}{% endfor %}
+            </td>
+
+            <td>
+          {% for message in messages %}{% if forloop.counter == 1 %}
+            <div class="center-align">
+              {% if message.tags == 'recpmmend error' %}
+                <p class="red-text"><i> {{ message }} </i></p>
+              {% elif message.tags == 'recommend info' %}
+                <p class="green-text"><i> {{ message }} </i></p>
+              {% endif %}
+            </div>
+          {% endif %}{% endfor %}
+          </td>
+
+        </tr>
+      {% endif %}
+    </table>
+  </div>
+
+  <br>
+  <br>
+
+  <div name="pitches" class="padded">
+    <h5> Existing Pitches: </h5>
+    <table>
+      <tr>
+        <td> Team </td>
+        <td> Task </td>
+        <td> Senior </td>
+        <td> Approved </td>
+      </tr>
+
+      {% for pitch in candidate.pitches.all %}
+      <tr>
+        <td> {{pitch.team}} </td>
+        <td> {% if pitch.task %} (ID={{pitch.task.id}}) {% endif %} {{pitch.task}} </td>
+        <td> {{pitch.senior}} </td>
+        <td> {{pitch.approved}} </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <br><br>
+
+  <div name="tasks" class="padded">
+    <h5> Assigned Tasks: </h5>
+    <table>
+      <tr>
+        <td> Title </td>
+        <td> Issuing Date </td>
+        <td> Due Date </td>
+        <td> Completion Date </td>
+        <td> Description </td>
+      </tr>
+
+      {% for pitch in candidate.pitches.all %}
+      {% if pitch.task %}
+      <tr>
+        <td>  (ID={{pitch.task.id}}) {{pitch.task}} </td>
+        <td> {{ pitch.task.issuing_date }} </td>
+        <td> {{ pitch.task.due_date }}</td>
+        <td> {{ pitch.task.completion_date }}</td>
+        <td> {{pitch.task.description}} {% if not pitch.task.due_date %} (casual) {% endif %} </td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </table>
+  </div>
+
 {% endblock %}

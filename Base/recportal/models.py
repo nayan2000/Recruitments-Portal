@@ -11,7 +11,7 @@ class Senior(models.Model):
                 1. Team must only be either:
                     a)  Backend
                     b)  Frontend
-                    c)  App
+                    c)  App Dev
                     d)  Graphics
                     e)  Video
 
@@ -78,7 +78,7 @@ class Pitch(models.Model):
         Note:
             The "approved" field denotes approval by THAT senior and is not equivalent
             to a comprehensive approval by the department, i.e. it is not the same as
-            candidate.approved .
+            candidate.approved . This should be given after the completion of the task.
 
             Each senior - candidate relation is models via. a pitch and multiple
             pitches would most-likely exist per candidate and per senior.
@@ -86,7 +86,7 @@ class Pitch(models.Model):
             Also, again, team must only be either:
                 a)  Backend
                 b)  Frontend
-                c)  App
+                c)  App Dev
                 d)  Graphics
                 e)  Video '''
     team = models.CharField(max_length=10, default='None', blank=True)
