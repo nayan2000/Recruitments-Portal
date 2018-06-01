@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from recportal.models import *
 
+
 @login_required
 def Candidates(request):
     ''' the view to render the candidates page '''
@@ -21,6 +22,7 @@ def Candidates(request):
 
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
+
 
 @login_required
 def CandidateProfile(request, first_name, last_name):
@@ -34,6 +36,7 @@ def CandidateProfile(request, first_name, last_name):
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
 
+
 @login_required
 def Home(request):
     ''' the first page you go to after logging in '''
@@ -43,6 +46,7 @@ def Home(request):
 
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
+
 
 @login_required
 def MyCandidates(request):
@@ -55,6 +59,7 @@ def MyCandidates(request):
 
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
+
 
 @login_required
 def PitchCandidate(request, first_name, last_name):
@@ -78,11 +83,17 @@ def PitchCandidate(request, first_name, last_name):
         except:
             pass
         # then, make sure that all of the data is valid and create the new pitch
+        possible_teams = ['App Dev', 'Backend', 'Frontend', 'Graphics', 'Video']
         try:
             team = data['team']
+            if team not in possible_teams:
+                messages.add_message(request, messages.ERROR, 'Pitch cancelled due to providing an invalid team. Stay away from dev tools.', extra_tags="pitch")
+                return redirect('recportal:profile', first_name=first_name, last_name=last_name)
             title = data['title']
             desc = data['description']
+
             isd = datetime.datetime.strptime(data['issuing_date'], '%Y-%m-%d')
+
             try:
                 dd = datetime.datetime.strptime(data['due_date'], '%Y-%m-%d')
                 task = Task.objects.create(title=title, description=desc, issuing_date=isd, due_date=dd)
@@ -102,12 +113,12 @@ def PitchCandidate(request, first_name, last_name):
             # finally, redirect them to the profile page along with the message
             return redirect('recportal:profile', first_name=first_name, last_name=last_name)
 
-        except Exception as error:
-            print(error)
+        except:
             return HttpResponse('missing credentials.')
 
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
+
 
 @login_required
 def RecommendCandidate(request, first_name, last_name):
@@ -116,10 +127,29 @@ def RecommendCandidate(request, first_name, last_name):
     if request.method == 'GET':
         context = {}
         context['candidate'] = get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
+        context['all_seniors'] = User.objects.all()
         return render(request, 'recportal/recommend.html', context)
+
+    if request.method == 'POST':
+        data = request.POST
+        fn = data["senior"].split("-")[0]
+        ln = data["senior"].split("-")[1]
+        candidate = get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
+        try:
+            senior = User.objects.get(first_name=fn, last_name=ln)
+        except:
+            messages.add_message(request, messages.ERROR, 'Senior does not exist. Stay away from dev tools.', extra_tags="recommend")
+            return redirect('recportal:profile', first_name=first_name, last_name=last_name)
+        reason = data['reason']
+        rec = Recommendation.objects.create(reason=reason, recommending_senior=request.user, recommended_senior=senior, candidate=candidate)
+        print(rec)
+        if rec:
+            messages.add_message(request, messages.INFO, 'Recommended successfully!', extra_tags="recommend")
+        return redirect('recportal:profile', first_name=first_name, last_name=last_name)
 
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
+
 
 @login_required
 def Recommendations(request):
@@ -157,6 +187,7 @@ def Recommendations(request):
 
         return redirect('recportal:recommendations')
 
+
 def SignIn(request):
     if request.method == 'GET':
         ''' Render the signin page '''
@@ -187,6 +218,7 @@ def SignIn(request):
     else:
         ''' ideal, this should never be triggered '''
         return JsonResponse({'error_message':'Invalid request method.'})
+
 
 def SignOut(request):
 

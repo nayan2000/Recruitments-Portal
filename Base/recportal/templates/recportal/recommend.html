@@ -2,4 +2,54 @@
 
 {% block title %}
   <title> Recruitments Portal -- Recommend </title>
+  <style>
+  .txtar
+    {
+      height: 50px;
+      width: 500px;
+      resize: both;
+      background-color: #f5f5f5;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <br>
+    <h3 class="center-align"> Recommend {{candidate.first_name}} {{candidate.last_name}} </h3>
+  <br>
+
+
+  <div class="container">
+  <form action="{% url 'recportal:recommend' first_name=candidate.first_name last_name=candidate.last_name %}" method="post" id="recommend">
+    {% csrf_token %}
+    <table>
+
+      <tr>
+        <td> To: </td>
+        <td>
+          <select form="recommend" name="senior" class="browser-default" required>
+            {% for senior in all_seniors %}{% if senior != request.user %}
+              <option value="{{senior.first_name}}-{{senior.last_name}}">  {{senior.first_name}} {{senior.last_name}} </option>
+            {% endif %}{% endfor %}
+          </select>
+        </td>
+      </tr>
+
+      <tr>
+        <td> Reason: </td>
+        <td> <textarea form="recommend" name="reason" class="txtar"></textarea> </td>
+      </tr>
+
+    </table>
+
+    <br>
+
+    <div class="center-align">
+      <input type="submit" value="recommend!" class="btn-large yellow lighten-1 grey-text">
+    </div>
+
+    <br>
+
+  </form>
 {% endblock %}

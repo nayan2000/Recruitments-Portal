@@ -65,7 +65,7 @@
             <td>
           {% for message in messages %}{% if forloop.counter == 1 %}
             <div class="center-align">
-              {% if message.tags == 'recpmmend error' %}
+              {% if message.tags == 'recommend error' %}
                 <p class="red-text"><i> {{ message }} </i></p>
               {% elif message.tags == 'recommend info' %}
                 <p class="green-text"><i> {{ message }} </i></p>
