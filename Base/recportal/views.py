@@ -28,9 +28,10 @@ def Candidates(request):
             last_name = data['last_name']
 
             ph = data["ph"]
-            if not re.match(r'(^[0-9]{10}$)', ph) or re.match(r'(^[0-9]{12}$)', ph):
-                messages.add_message(request, messages.ERROR, 'Invalid phone number.')
-                return redirect('recportal:candidates')
+            if not re.match(r'(^[0-9]{10}$)', ph):
+                if not re.match(r'^91([0-9]{10})$', ph):
+                	messages.add_message(request, messages.ERROR, 'Invalid phone number.')
+                	return redirect('recportal:candidates')
 
             email = data["email"]
             if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
