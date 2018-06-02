@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from django.conf import settings
@@ -25,6 +26,17 @@ def Candidates(request):
         try:
             first_name = data['first_name']
             last_name = data['last_name']
+
+            ph = data["ph"]
+            if not re.match(r'(^[0-9]{10}$)', ph) or re.match(r'(^[0-9]{12}$)', ph):
+                messages.add_message(request, messages.ERROR, 'Invalid phone number.')
+                return redirect('recportal:candidates')
+
+            email = data["email"]
+            if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
+                messages.add_message(request, messages.ERROR, 'Invalid email address.')
+                return redirect('recportal:candidates')
+
             try:
                 skill1 = data['skill1']
             except:
@@ -38,12 +50,13 @@ def Candidates(request):
             except:
                 about = ''
 
-        except:
-            messages.add_message(request, messages.ERROR, 'essential data missing.')
+        except Exception as err:
+            print(err)
+            messages.add_message(request, messages.ERROR, 'Essential data missing.')
             return redirect('recportal:candidates')
 
-        Candidate.objects.create(first_name=first_name, last_name=last_name, skill1=skill1, skill2=skill2, about=about ,approved=False)
-        messages.add_message(request, messages.INFO, 'candidate successfully created!')
+        Candidate.objects.create(first_name=first_name, last_name=last_name, ph=ph, email=email, skill1=skill1, skill2=skill2, about=about ,approved=False)
+        messages.add_message(request, messages.INFO, 'Candidate successfully created!')
         return redirect('recportal:candidates')
 
     else:

@@ -56,6 +56,8 @@ class Candidate(models.Model):
         recommended is for the recommendations feature'''
     first_name = models.CharField(max_length=50, null=False)
     last_name = models.CharField(max_length=50, null=False)
+    ph = models.CharField(max_length=12, null=False)
+    email = models.CharField(max_length=50, null=False)
     about = models.TextField(default='', blank=True)
     skill1 = models.CharField(max_length=100, default='', blank=True)
     skill2 = models.CharField(max_length=100, default='', blank=True)
