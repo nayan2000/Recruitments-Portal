@@ -62,6 +62,19 @@ def MyCandidates(request):
 
 
 @login_required
+def MyPitches(request):
+
+    if request.method == 'GET':
+        context = {}
+        context['mypitches'] = request.user.pitches.all()
+        print(context)
+        return render(request, 'recportal/mypitches.html', context)
+
+    else:
+        return JsonResponse({'error_message':'Invalid request method.'})
+
+
+@login_required
 def PitchCandidate(request, first_name, last_name):
     ''' the view for the form to pitch candidates '''
 

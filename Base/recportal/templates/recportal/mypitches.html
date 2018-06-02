@@ -1,0 +1,48 @@
+{% extends 'recportal/base.html' %}
+
+{% block title %}
+  <title> Recruitments Portal -- My Pitches </title>
+{% endblock %}
+
+{% block content %}
+  <br>
+
+  <div class="container" >
+    <table>
+
+      <tr class="light-blue">
+        <td colspan="2" class="center-align"> Pitch Details </td>
+        <td colspan="5" class="center-align"> Task Details </td>
+      </tr>
+
+      <tr>
+        <td class="light-blue lighten-1"> Candidate </td>
+        <td class="light-blue lighten-1"> Potential Team </td>
+        <td class="light-blue lighten-2"> Title </td>
+        <td class="light-blue lighten-2"> Description </td>
+        <td class="light-blue lighten-2"> Issuing Date </td>
+        <td class="light-blue lighten-2"> Due Date </td>
+        <td class="light-blue lighten-2"> Date of Completion </td>
+      </tr>
+
+      {% for pitch in mypitches %}
+      <tr class="light-blue lighten-4">
+        <td> <a href="{% url 'recportal:profile' pitch.candidate.first_name pitch.candidate.last_name %}"> {{pitch.candidate.first_name}} {{pitch.candidate.last_name}} </a> </td>
+        <td> {{pitch.team}} </td>
+        <td> {{pitch.task.title}} </td>
+        <td> {{pitch.task.description}} </td>
+        <td> {{pitch.task.issuing_date}} </td>
+        <td> {{pitch.task.due_date}} </td>
+        <td>
+              {% if task.is_ongoing %}
+                ongoing
+              {% else %}
+                idk
+              {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+{% endblock %}

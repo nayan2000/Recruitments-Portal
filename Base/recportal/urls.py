@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^profile/(?P<first_name>[A-Za-z]+)-(?P<last_name>[A-Za-z]+)/$', views.CandidateProfile, name='profile'),
     url(r'^pitch/(?P<first_name>[A-Za-z]+)-(?P<last_name>[A-Za-z]+)/$', views.PitchCandidate, name='pitch'),
     url(r'^recommend/(?P<first_name>[A-Za-z]+)-(?P<last_name>[A-Za-z]+)/$', views.RecommendCandidate, name='recommend'),
+    url(r'^my-pitches/$', views.MyPitches, name="mypitches"),
 ]

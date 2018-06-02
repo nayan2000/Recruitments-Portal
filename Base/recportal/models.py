@@ -119,6 +119,11 @@ class Task(models.Model):
         else:
             return True
 
+    def is_ongoing(self):
+        if due_date - datetime.date.now() > 0:
+            # before it's due
+            return False
+
     def is_overdue(self):
         ''' Returns a boolean value indicating if a task is overdue.
             Case I:     casual task - False
@@ -129,8 +134,7 @@ class Task(models.Model):
             return False
         else:
         # this else may seem redundent but it improves readability, I often do this.
-            if due_date - datetime.date.now() > 0:
-                # before it's due
+            if self.is_ongoing():
                 return False
             else:
                 # after the due date
