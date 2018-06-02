@@ -20,6 +20,32 @@ def Candidates(request):
         context['data'] = Candidate.objects.all()
         return render(request, 'recportal/candidates.html', context)
 
+    if request.method == 'POST':
+        data = request.POST
+        try:
+            first_name = data['first_name']
+            last_name = data['last_name']
+            try:
+                skill1 = data['skill1']
+            except:
+                skill1 = ''
+            try:
+                skill2 = data['skill2']
+            except:
+                skill2 = ''
+            try:
+                about = data['about']
+            except:
+                about = ''
+
+        except:
+            messages.add_message(request, messages.ERROR, 'essential data missing.')
+            return redirect('recportal:candidates')
+
+        Candidate.objects.create(first_name=first_name, last_name=last_name, skill1=skill1, skill2=skill2, about=about ,approved=False)
+        messages.add_message(request, messages.INFO, 'candidate successfully created!')
+        return redirect('recportal:candidates')
+
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
 

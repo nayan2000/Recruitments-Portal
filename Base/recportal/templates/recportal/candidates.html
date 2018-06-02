@@ -2,6 +2,15 @@
 
 {% block title %}
   <title> Recruitments Portal -- Candidates </title>
+  <style>
+  .txtar
+    {
+      height: 50px;
+      width: 500px;
+      resize: both;
+      background-color: #f5f5f5;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
@@ -12,10 +21,10 @@
       <table>
 
         <tr>
-          <td colspan="2"> Name </td>
-          <td> Skill 1 </td>
-          <td> Skill 2 </td>
-          <td> About </td>
+          <td colspan="2"><b> Name </b></td>
+          <td><b> Skill 1 </b></td>
+          <td><b> Skill 2 </b></td>
+          <td><b> About </b></td>
         </tr>
 
         {% for candidate in data %}
@@ -27,7 +36,71 @@
         </tr>
         {% endfor %}
 
-      <table>
+      </table>
     </div>
+
+    <br><br>
+
+    {% if messages %}
+          {% for message in messages %}{% if forloop.counter == 1 %}
+            <div class="center-align">
+              {% if message.tags == 'error' %}
+                <p class="red-text"><i> {{ message }} </i></p>
+              {% elif message.tags == 'info' %}
+                <p class="green-text"><i> {{ message }} </i></p>
+              {% endif %}
+            </div>
+            {% endif %}{% endfor %}
+    {% endif %}
+    
+    <br>
+
+    <div class="container center-align grey lighten-1">
+      <br>
+      <h4 class="center-align"> Add a New Candidate </h3>
+      <br>
+      <form method="post" action="{% url 'recportal:candidates' %}" id="newcandidate">
+        {% csrf_token %}
+        <table class="grey lighten-2">
+
+          <tr>
+            <td> First Name </td>
+            <td> <input type="text" name="first_name" maxlength="50" required /> </td>
+          </tr>
+
+          <tr>
+            <td> Last Name </td>
+            <td> <input type="text" name="last_name" maxlength="50" required /> </td>
+          </tr>
+
+          <tr>
+            <td> Skill 1 </td>
+            <td> <input type="text" name="skill1" maxlength="100" /> </td>
+          </tr>
+
+          <tr>
+            <td> Skill 2 </td>
+            <td> <input type="text" name="skill2" maxlength="100" /> </td>
+          </tr>
+
+          <tr>
+            <td> About </td>
+            <td> <textarea form="newcandidate" name="about" /></textarea> </td>
+          </tr>
+
+        </table>
+
+      <br>
+
+      <div class="center-align">
+        <input type="submit" class="btn-large blue darken-3" value="Add" />
+      </div>
+
+      <br>
+
+      </form>
+    </div>
+
+    <br>
 
 {% endblock %}
