@@ -81,7 +81,6 @@ def MyPitches(request):
             pass
         pitch.task.save()
         pitch.save()
-        print(pitch.task.completion_date)
         messages.add_message(request, messages.INFO, 'Task updated successfully!')
         return redirect('recportal:mypitches')
 
@@ -147,6 +146,17 @@ def PitchCandidate(request, first_name, last_name):
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
 
+@login_required
+def Pitches(request):
+    ''' A simple view to render the pitches page where all created pitches are visible '''
+
+    if request.method == 'GET':
+        context = {}
+        context['pitches'] = Pitch.objects.all()
+        return render(request, 'recportal/pitches.html', context)
+
+    else:
+        return JsonResponse({'error_message':'Invalid request method.'})
 
 @login_required
 def RecommendCandidate(request, first_name, last_name):
@@ -170,7 +180,6 @@ def RecommendCandidate(request, first_name, last_name):
             return redirect('recportal:profile', first_name=first_name, last_name=last_name)
         reason = data['reason']
         rec = Recommendation.objects.create(reason=reason, recommending_senior=request.user, recommended_senior=senior, candidate=candidate)
-        print(rec)
         if rec:
             messages.add_message(request, messages.INFO, 'Recommended successfully!', extra_tags="recommend")
         return redirect('recportal:profile', first_name=first_name, last_name=last_name)

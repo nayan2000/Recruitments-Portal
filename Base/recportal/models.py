@@ -61,6 +61,9 @@ class Candidate(models.Model):
     skill2 = models.CharField(max_length=100, default='', blank=True)
     approved = models.BooleanField(default=False, blank=True)
 
+    class meta: # not recognized?
+        ordering = ['first_name', 'last_name']
+
     def __str__(self):
         return self.get_full_name()
 
@@ -94,6 +97,9 @@ class Pitch(models.Model):
     senior = models.ForeignKey(User, related_name='pitches', null=False)
     candidate = models.ForeignKey('recportal.Candidate', related_name='pitches', null=False)
     approved = models.BooleanField(default=False, blank=True)
+
+    class meta:
+        order_with_respect_to = 'candidate'
 
     def __str__(self):
         string = "{} by  {}".format(self.candidate.get_full_name(), self.senior.get_full_name())
