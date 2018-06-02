@@ -67,8 +67,23 @@ def MyPitches(request):
     if request.method == 'GET':
         context = {}
         context['mypitches'] = request.user.pitches.all()
-        print(context)
         return render(request, 'recportal/mypitches.html', context)
+
+    if request.method == 'POST':
+        data = request.POST
+        candidate = get_object_or_404(Candidate, first_name=data['candidate'].split('-')[0], last_name=data['candidate'].split('-')[1])
+        pitch = get_object_or_404(Pitch, candidate=candidate, senior=request.user)
+        pitch.task.completion_date = datetime.datetime.strptime(data['doc'], '%Y-%m-%d').date()
+        try:
+            if data['approval']:
+                pitch.approved = True
+        except:
+            pass
+        pitch.task.save()
+        pitch.save()
+        print(pitch.task.completion_date)
+        messages.add_message(request, messages.INFO, 'Task updated successfully!')
+        return redirect('recportal:mypitches')
 
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
@@ -105,10 +120,10 @@ def PitchCandidate(request, first_name, last_name):
             title = data['title']
             desc = data['description']
 
-            isd = datetime.datetime.strptime(data['issuing_date'], '%Y-%m-%d')
+            isd = datetime.datetime.strptime(data['issuing_date'], '%Y-%m-%d').date()
 
             try:
-                dd = datetime.datetime.strptime(data['due_date'], '%Y-%m-%d')
+                dd = datetime.datetime.strptime(data['due_date'], '%Y-%m-%d').date()
                 task = Task.objects.create(title=title, description=desc, issuing_date=isd, due_date=dd)
             except:
                 task = Task.objects.create(title=title, description=desc, issuing_date=isd)

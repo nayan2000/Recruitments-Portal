@@ -109,8 +109,9 @@ class Task(models.Model):
     completion_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return self.title
+        return "{} {} -- {}".format(self.pitch.candidate.first_name,self.pitch.candidate.last_name, self.title)
 
+    @property               # doing this allows us to call it conveniently in templates
     def is_casual(self):
         ''' Casual tasks are those without any due date. This function will
             return a boolean value indicating if it is a casual task. '''
@@ -119,11 +120,15 @@ class Task(models.Model):
         else:
             return True
 
+    @property
     def is_ongoing(self):
-        if due_date - datetime.date.now() > 0:
-            # before it's due
+        if self.completion_date:
             return False
+        else:
+            return True
 
+
+    @property
     def is_overdue(self):
         ''' Returns a boolean value indicating if a task is overdue.
             Case I:     casual task - False
@@ -131,17 +136,16 @@ class Task(models.Model):
             Case III:   completed on time - False
             Case IV:    overdue - True '''
         if not self.due_date:
-            return False
+            return False    # case I
         else:
-        # this else may seem redundent but it improves readability, I often do this.
-            if self.is_ongoing():
-                return False
+            if self.completion_date:
+                dt = self.completion_date
             else:
-                # after the due date
-                if due_date - completion_date > 0:
-                    return False
-                else:
-                    return True
+                dt = datetime.date.today()
+            if dt > self.due_date:
+                return True # case IV
+            else:
+                return False # cases II and III
 
 class Recommendation(models.Model):
     ''' To enable the recommendations feature we use this model. Seniors can

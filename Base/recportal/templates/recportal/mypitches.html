@@ -5,19 +5,25 @@
 {% endblock %}
 
 {% block content %}
-  <br>
-
   <div class="container" >
+    <h3 class="center-align"> My Pitches </h3>
+    {% for message in messages %}{% if forloop.counter == 1 %}
+        {% if message.tags == 'info' %}
+          <p class="green-text center-align"><i> {{ message }} </i></p>
+        {% endif %}
+    {% endif %}{% endfor %}
+    <br>
     <table>
 
       <tr class="light-blue">
-        <td colspan="2" class="center-align"> Pitch Details </td>
+        <td colspan="3" class="center-align"> Pitch Details </td>
         <td colspan="5" class="center-align"> Task Details </td>
       </tr>
 
       <tr>
         <td class="light-blue lighten-1"> Candidate </td>
         <td class="light-blue lighten-1"> Potential Team </td>
+        <td class="light-blue lighten-1"> Approved </td>
         <td class="light-blue lighten-2"> Title </td>
         <td class="light-blue lighten-2"> Description </td>
         <td class="light-blue lighten-2"> Issuing Date </td>
@@ -29,20 +35,79 @@
       <tr class="light-blue lighten-4">
         <td> <a href="{% url 'recportal:profile' pitch.candidate.first_name pitch.candidate.last_name %}"> {{pitch.candidate.first_name}} {{pitch.candidate.last_name}} </a> </td>
         <td> {{pitch.team}} </td>
+        <td> {{pitch.approved}} </td>
         <td> {{pitch.task.title}} </td>
         <td> {{pitch.task.description}} </td>
         <td> {{pitch.task.issuing_date}} </td>
         <td> {{pitch.task.due_date}} </td>
-        <td>
-              {% if task.is_ongoing %}
-                ongoing
+
+              {% if pitch.task.completion_date %}
+                <td class="green-text">
+                  {{pitch.task.completion_date}} {% if pitch.task.is_overdue %}<br><p class="red-text"> (overdue) </p>{% endif %}
+               </td>
+              {% elif pitch.task.is_overdue %}
+                <td class="red-text"> overdue </td>
+              {% elif pitch.task.is_ongoing %}
+                <td> ongoing </td>
               {% else %}
-                idk
+                <td> error, please notify the dev </td>
               {% endif %}
+
         </td>
       </tr>
       {% endfor %}
     </table>
   </div>
+
+  <br> <br>
+
+  <div class="container">
+    <h3 class="center-align"> Update Tasks </h3>
+    <br>
+    <div class="grey">
+      <form method="post" action="{% url 'recportal:mypitches' %}" id="update">
+        {% csrf_token %}
+          <table>
+
+            <tr>
+              <td> Candidate: </td>
+              <td>
+                <select class="browser-default" form="update" name="candidate" required>
+                  {% for pitch in mypitches %}
+                    <option value="{{pitch.candidate.first_name}}-{{pitch.candidate.last_name}}"> {{pitch.candidate.first_name}} {{pitch.candidate.last_name}} -- {{pitch.task.title}} </option>
+                  {% endfor %}
+                </select>
+              </td>
+            <tr>
+
+            <tr>
+              <td> Date of completion: </td>
+              <td> <input type="date" name="doc" required> </td>
+            </tr>
+
+            <tr>
+              <td> Approve Pitch: </td>
+              <td>
+                <label>
+                  <input type="checkbox" name="approval" value="True" />
+                  <span></span>
+                </label>
+            </tr>
+          </td>
+
+          </table>
+
+        </div>
+      </div>
+
+      <br>
+
+          <div class="center-align">
+            <input type="submit" value="update!" class="btn-large green lighten-1">
+          </div>
+
+      </form>
+
+  <br>
 
 {% endblock %}
