@@ -27,6 +27,9 @@ def Candidates(request):
             first_name = data['first_name']
             last_name = data['last_name']
 
+            first_name.replace(' ', '-')
+            last_name.replace(' ', '-')
+
             ph = data["ph"]
             if not re.match(r'(^[0-9]{10}$)', ph):
                 if not re.match(r'^91([0-9]{10})$', ph):
