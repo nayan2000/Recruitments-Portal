@@ -24,11 +24,13 @@ def Candidates(request):
     if request.method == 'POST':
         data = request.POST
         try:
-            first_name = data['first_name']
-            last_name = data['last_name']
+            print(data['first_name'])
+            first_name = data['first_name'].replace(' ', '_')
+            print(first_name)
 
-            first_name.replace(' ', '+')
-            last_name.replace(' ', '+')
+            print(data['last_name'])
+            last_name = data['last_name'].replace(' ', '_')
+            print(last_name)
 
             ph = data["ph"]
             if not re.match(r'(^[0-9]{10}$)', ph):
