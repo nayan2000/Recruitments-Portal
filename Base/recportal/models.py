@@ -1,6 +1,8 @@
+import os
 import datetime
 
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 
 class Senior(models.Model):
@@ -25,7 +27,7 @@ class Senior(models.Model):
     team = models.CharField(max_length=10, default='None', blank=True)
     seniority_level = models.IntegerField(default=0, blank=True)
 
-    class Meta:
+    class Meta():
         verbose_name_plural = 'Senior Extention Data'
 
     def __str__(self):
@@ -63,7 +65,7 @@ class Candidate(models.Model):
     skill2 = models.CharField(max_length=100, default='', blank=True)
     approved = models.BooleanField(default=False, blank=True)
 
-    class meta: # not recognized?
+    class meta():
         ordering = ['first_name', 'last_name']
 
     def __str__(self):
@@ -100,25 +102,27 @@ class Pitch(models.Model):
     candidate = models.ForeignKey('recportal.Candidate', related_name='pitches', null=False, on_delete=models.CASCADE)
     approved = models.BooleanField(default=False, blank=True)
 
-    class meta:
+    class meta():
         order_with_respect_to = 'candidate'
 
     def __str__(self):
         string = "{} by  {}".format(self.candidate.get_full_name(), self.senior.get_full_name())
         return string
 
+
 class Task(models.Model):
     ''' This model accounts for the task assigned by the senior to the candidate
-        and is in a way an extention of th Pitch model. '''
+        and is in a way an extention of the Pitch model. '''
     title = models.CharField(max_length=50, null=False)
     candidate = models.ForeignKey(Candidate, related_name="tasks", null=False, blank=False, on_delete=models.CASCADE)
     description = models.TextField(max_length=100, null=False)
     issuing_date = models.DateField(null=False)
     due_date = models.DateField(null=True, blank=True)
     completion_date = models.DateField(null=True, blank=True)
+    rubric = models.FileField(upload_to="", default=None, blank=True)
 
     def __str__(self):
-        return "{} {} -- {}".format(self.pitch.candidate.first_name,self.pitch.candidate.last_name, self.title)
+        return self.title
 
     @property               # doing this allows us to call it conveniently in templates
     def is_casual(self):

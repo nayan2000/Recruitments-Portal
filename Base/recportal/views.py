@@ -1,3 +1,4 @@
+import os
 import re
 from datetime import datetime
 
@@ -9,6 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 
+from recportal.mimeTypes import MIME_TYPES
 from recportal.models import *
 
 
@@ -81,6 +83,21 @@ def CandidateProfile(request, first_name, last_name):
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
 
+@login_required
+def Download(request, filename):
+    try:
+        filetype = filename.split(".")[-1]
+    except IndexError: # default to text
+        filetype = "txt"
+    try:
+        mimetype = MIME_TYPES[filetype]
+    except KeyError:
+        filetype = "txt"
+        mimetype = "text/plain"
+    with open(os.path.join(settings.MEDIA_ROOT, filename), "rb") as f:
+        response = HttpResponse(f.read(), content_type=mimetype)
+        response["Content-Disposition"] = "inline; filename=" + filename
+    return response
 
 @login_required
 def Home(request):
@@ -166,11 +183,18 @@ def PitchCandidate(request, first_name, last_name):
 
             isd = datetime.datetime.strptime(data['issuing_date'], '%Y-%m-%d').date()
 
+            if "rubric" in data.keys():
+                rubric = data["rubric"]
+                # no extra security measures are taken to check the type of the file uploaded
+                # since this webapp is closed only to member of a department, there is no need for it.
+            else:
+                rubric = None
+
             try:
                 dd = datetime.datetime.strptime(data['due_date'], '%Y-%m-%d').date()
-                task = Task.objects.create(title=title, description=desc, issuing_date=isd, due_date=dd, candidate=candidate)
+                task = Task.objects.create(title=title, description=desc, issuing_date=isd, due_date=dd, candidate=candidate, rubric=rubric)
             except:
-                task = Task.objects.create(title=title, description=desc, issuing_date=isd, candidate=candidate)
+                task = Task.objects.create(title=title, description=desc, issuing_date=isd, candidate=candidate, rubric=rubric)
             pitch = Pitch.objects.create(team=team, task=task, senior=request.user ,candidate=candidate)
             if pitch:
                 messages.add_message(request, messages.INFO, 'Pitched successfully!', extra_tags="pitch")
@@ -185,8 +209,8 @@ def PitchCandidate(request, first_name, last_name):
             # finally, redirect them to the profile page along with the message
             return redirect('recportal:profile', first_name=first_name, last_name=last_name)
 
-        except:
-            return HttpResponse('missing credentials.')
+        except Exception as err:
+            return HttpResponse('missing credentials. {}'.format(err))
 
     else:
         return JsonResponse({'error_message':'Invalid request method.'})

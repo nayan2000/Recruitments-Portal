@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^recommend/(?P<first_name>[A-Za-z_]+)-(?P<last_name>[A-Za-z]+)/$', views.RecommendCandidate, name='recommend'),
     url(r'^my-pitches/$', views.MyPitches, name="mypitches"),
     url(r'^pitches/$', views.Pitches, name="pitches"),
+    url(r'^download/(?P<filename>.+)/$', views.Download, name="download"),    
 ]

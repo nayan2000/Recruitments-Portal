@@ -119,6 +119,7 @@
         <td> Due Date </td>
         <td> Completion Date </td>
         <td> Description </td>
+        <td> Rubric </td>
       </tr>
 
       {% for pitch in candidate.pitches.all %}
@@ -129,6 +130,7 @@
         <td> {{ pitch.task.due_date }}</td>
         <td> {{ pitch.task.completion_date }}</td>
         <td> {{pitch.task.description}} {% if not pitch.task.due_date %} (casual) {% endif %} </td>
+        <td> {% if pitch.task.rubric %} <a href="{% url 'recportal:download' filename=pitch.task.rubric.name %}"> {{pitch.task.rubric.name}} </a> {% else %} None {% endif %} </td>
       </tr>
       {% endif %}
       {% endfor %}
