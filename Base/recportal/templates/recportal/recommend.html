@@ -11,6 +11,16 @@
       background-color: #f5f5f5;
     }
   </style>
+  <script>
+    function visInduvisual(){
+      document.getElementById("mode=team").style.visibility = "hidden";
+      document.getElementById("mode=induvisual").style.visibility = "visible";
+    }
+    function visTeam(){
+      document.getElementById("mode=induvisual").style.visibility = "hidden";
+      document.getElementById("mode=team").style.visibility = "visible";
+    }
+  </script>
 {% endblock %}
 
 {% block content %}
@@ -26,12 +36,30 @@
     <table>
 
       <tr>
+        <td class="right-align"><label> <input type="radio" name="mode" value="induvisual" class="browser-default" onclick="visInduvisual()" required/><span> induvisual </span></label></td>
+        <td class="center-align"><label>  <input type="radio" name="mode" value="team" class="browser-default" onclick="visTeam()" required/><span> team </span></label></td>
+      </tr>
+
+      <tr id="mode=induvisual" style="visibility:hidden">
         <td> To: </td>
         <td>
           <select form="recommend" name="senior" class="browser-default" required>
             {% for senior in all_seniors %}{% if senior != request.user %}
               <option value="{{senior.first_name}}-{{senior.last_name}}">  {{senior.first_name}} {{senior.last_name}} </option>
             {% endif %}{% endfor %}
+          </select>
+        </td>
+      </tr>
+
+      <tr id="mode=team" style="visibility:hidden">
+        <td> To: </td>
+        <td>
+          <select form="recommend" name="team" class="browser-default" required>
+              <option value="App Dev"> Frontend </option>
+              <option value="Backend"> Backend </option>
+              <option value="Frontend"> Frontend </option>
+              <option value="Graphics"> Graphics </option>
+              <option value="Video"> Video </option>
           </select>
         </td>
       </tr>

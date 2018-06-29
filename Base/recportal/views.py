@@ -215,16 +215,22 @@ def RecommendCandidate(request, first_name, last_name):
 
     if request.method == 'POST':
         data = request.POST
-        fn = data["senior"].split("-")[0]
-        ln = data["senior"].split("-")[1]
-        candidate = get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
-        try:
-            senior = User.objects.get(first_name=fn, last_name=ln)
-        except:
-            messages.add_message(request, messages.ERROR, 'Senior does not exist. Stay away from dev tools.', extra_tags="recommend")
-            return redirect('recportal:profile', first_name=first_name, last_name=last_name)
+        mode = data["mode"]
         reason = data['reason']
-        rec = Recommendation.objects.create(reason=reason, recommending_senior=request.user, recommended_senior=senior, candidate=candidate)
+        candidate = get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
+        if mode == "induvisual":
+            fn = data["senior"].split("-")[0]
+            ln = data["senior"].split("-")[1]
+            try:
+                senior = User.objects.get(first_name=fn, last_name=ln)
+            except:
+                messages.add_message(request, messages.ERROR, 'Senior does not exist. Stay away from dev tools.', extra_tags="recommend")
+                return redirect('recportal:profile', first_name=first_name, last_name=last_name)
+            rec = Recommendation.objects.create(reason=reason, recommending_senior=request.user, recommended_senior=senior, candidate=candidate)
+        elif mode == "team":
+            for senior in Senior.objects.filter(team=data["team"]):
+                Recommendation.objects.create(reason=reason, recommending_senior=request.user, recommended_senior=senior.user, candidate=candidate)
+            rec = True
         if rec:
             messages.add_message(request, messages.INFO, 'Recommended successfully!', extra_tags="recommend")
         return redirect('recportal:profile', first_name=first_name, last_name=last_name)
