@@ -21,7 +21,7 @@ class Senior(models.Model):
                     b)  2 = Third Year
                     c)  3 = Fourth Year
                     d)  4 = Fifth Year '''
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     team = models.CharField(max_length=10, default='None', blank=True)
     seniority_level = models.IntegerField(default=0, blank=True)
 
@@ -95,9 +95,9 @@ class Pitch(models.Model):
                 d)  Graphics
                 e)  Video '''
     team = models.CharField(max_length=10, default='None', blank=True)
-    task = models.OneToOneField('recportal.Task', null=True, blank=True)
-    senior = models.ForeignKey(User, related_name='pitches', null=False)
-    candidate = models.ForeignKey('recportal.Candidate', related_name='pitches', null=False)
+    task = models.OneToOneField('recportal.Task', null=True, blank=True, on_delete=models.CASCADE)
+    senior = models.ForeignKey(User, related_name='pitches', null=False, on_delete=models.CASCADE)
+    candidate = models.ForeignKey('recportal.Candidate', related_name='pitches', null=False, on_delete=models.CASCADE)
     approved = models.BooleanField(default=False, blank=True)
 
     class meta:
@@ -111,6 +111,7 @@ class Task(models.Model):
     ''' This model accounts for the task assigned by the senior to the candidate
         and is in a way an extention of th Pitch model. '''
     title = models.CharField(max_length=50, null=False)
+    candidate = models.ForeignKey(Candidate, related_name="tasks", null=False, blank=False, on_delete=models.CASCADE)
     description = models.TextField(max_length=100, null=False)
     issuing_date = models.DateField(null=False)
     due_date = models.DateField(null=True, blank=True)
@@ -161,9 +162,9 @@ class Recommendation(models.Model):
          or the candidate or decline. '''
     status = models.BooleanField(default=False) # accepted to interview or pending recommendation
     reason = models.TextField(default="Just like that")
-    candidate = models.ForeignKey('recportal.Candidate', related_name="candidates", null=False)
-    recommending_senior = models.ForeignKey(User, related_name='recommendations_made', null=False)
-    recommended_senior = models.ForeignKey(User, related_name='recommended', null=False)
+    candidate = models.ForeignKey('recportal.Candidate', related_name="candidates", null=False, on_delete=models.CASCADE)
+    recommending_senior = models.ForeignKey(User, related_name='recommendations_made', null=False, on_delete=models.CASCADE)
+    recommended_senior = models.ForeignKey(User, related_name='recommended', null=False, on_delete=models.CASCADE)
 
     def __str__(self):
         string = "{} to {}".format(self.candidate.first_name, self.recommended_senior.first_name)
