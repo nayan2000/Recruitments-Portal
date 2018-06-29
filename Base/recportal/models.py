@@ -57,7 +57,7 @@ class Candidate(models.Model):
     first_name = models.CharField(max_length=50, null=False)
     last_name = models.CharField(max_length=50, null=False)
     ph = models.CharField(max_length=12, null=False)
-    email = models.CharField(max_length=50, null=False)
+    email = models.EmailField(null=False)
     about = models.TextField(default='', blank=True)
     skill1 = models.CharField(max_length=100, default='', blank=True)
     skill2 = models.CharField(max_length=100, default='', blank=True)
