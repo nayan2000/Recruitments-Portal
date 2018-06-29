@@ -168,9 +168,9 @@ def PitchCandidate(request, first_name, last_name):
 
             try:
                 dd = datetime.datetime.strptime(data['due_date'], '%Y-%m-%d').date()
-                task = Task.objects.create(title=title, description=desc, issuing_date=isd, due_date=dd)
+                task = Task.objects.create(title=title, description=desc, issuing_date=isd, due_date=dd, candidate=candidate)
             except:
-                task = Task.objects.create(title=title, description=desc, issuing_date=isd)
+                task = Task.objects.create(title=title, description=desc, issuing_date=isd, candidate=candidate)
             pitch = Pitch.objects.create(team=team, task=task, senior=request.user ,candidate=candidate)
             if pitch:
                 messages.add_message(request, messages.INFO, 'Pitched successfully!', extra_tags="pitch")
