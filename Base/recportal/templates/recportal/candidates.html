@@ -10,6 +10,11 @@
       resize: both;
       background-color: #f5f5f5;
     }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+          margin: 0;
+    }
   </style>
 {% endblock %}
 
@@ -40,6 +45,18 @@
         </tr>
         {% endfor %}
 
+        <tr class="grey lighten-1">
+          <form method="post" action="{% url 'recportal:candidates' %}" id="newcandidate">
+          {% csrf_token %}
+            <td colspan="2"> <input type="text" name="first_name" maxlength="50" placeholder="first name" required /> <input type="text" name="last_name" maxlength="50" placeholder="last name" required /> </td>
+            <td colspan="2"> <input type="number" name="ph" placeholder="phone number" required /> </td>
+            <td colspan="2"> <input type="email" name="email" maxlength="50" placeholder="email address" required /> </td>
+            <td> <input type="text" name="skill1" maxlength="100" placeholder="skill1" /> </td>
+            <td> <input type="text" name="skill2" maxlength="100" placeholder="skill2" /> </td>
+            <td> <input type="text" name="about" placeholder="about" /> </td>
+            <td colspan="3"> <input type="submit" class="btn blue darken-3" value="Add" /> </td>
+        </tr>
+
       </table>
     </div>
 
@@ -59,6 +76,7 @@
 
     <br>
 
+<!--
     <div class="container center-align grey lighten-1">
       <br>
       <h4 class="center-align"> Add a New Candidate </h3>
@@ -114,7 +132,7 @@
 
       </form>
     </div>
-
+-->
     <br>
 
 {% endblock %}
