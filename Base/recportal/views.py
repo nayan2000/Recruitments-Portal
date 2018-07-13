@@ -113,8 +113,8 @@ def EditCandidate(request, first_name, last_name):
                 if not re.match(r'^91([0-9]{10})$', ph):
                     messages.add_message(request, messages.ERROR, 'Invalid phone number.', extra_tags="edit")
                     return redirect('recportal:profile', first_name, last_name)
-                else:
-                    candidate.ph = ph
+            else:
+                candidate.ph = ph
 
             email = data["email"]
             if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
