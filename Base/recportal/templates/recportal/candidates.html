@@ -4,16 +4,16 @@
   <title> Recruitments Portal -- Candidates </title>
   <style>
   .txtar
-    {
+    /* {
       height: 50px;
       width: 500px;
       resize: both;
       background-color: #f5f5f5;
-    }
+    } */
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button {
         -webkit-appearance: none;
-          margin: 0;
+        margin: 0;
     }
   </style>
 {% endblock %}
@@ -41,7 +41,7 @@
           <td colspan="2"> {{candidate.email}} </td>
           <td> {{ candidate.skill1 }} </td>
           <td> {{ candidate.skill2 }} </td>
-          <td colspan="3"> {{candidate.about}} </td>
+          <td colspan="4"> {{candidate.about}} </td>
         </tr>
         {% endfor %}
 
@@ -53,8 +53,8 @@
             <td colspan="2"> <input type="email" name="email" maxlength="50" placeholder="email address" required /> </td>
             <td> <input type="text" name="skill1" maxlength="100" placeholder="skill1" /> </td>
             <td> <input type="text" name="skill2" maxlength="100" placeholder="skill2" /> </td>
-            <td> <input type="text" name="about" placeholder="about" /> </td>
-            <td colspan="3"> <input type="submit" class="btn blue darken-3" value="Add" /> </td>
+            <td colspan="3"> <input type="text" name="about" placeholder="about" /> </td>
+            <td> <input type="submit" class="btn blue darken-3" value="Add" /> </td>
         </tr>
 
       </table>

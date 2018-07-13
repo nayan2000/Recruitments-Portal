@@ -26,13 +26,9 @@ def Candidates(request):
     if request.method == 'POST':
         data = request.POST
         try:
-            print(data['first_name'])
             first_name = data['first_name'].replace(' ', '_')
-            print(first_name)
 
-            print(data['last_name'])
             last_name = data['last_name'].replace(' ', '_')
-            print(last_name)
 
             ph = data["ph"]
             if not re.match(r'(^[0-9]{10}$)', ph):
@@ -98,6 +94,60 @@ def Download(request, filename):
         response = HttpResponse(f.read(), content_type=mimetype)
         response["Content-Disposition"] = "inline; filename=" + filename
     return response
+
+
+
+@login_required
+def EditCandidate(request, first_name, last_name):
+
+    if request.method == "POST":
+        candidate = get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
+        data = request.POST
+        try:
+            candidate.first_name = data['first_name'].replace(' ', '_')
+
+            candidate.last_name = data['last_name'].replace(' ', '_')
+
+            ph = data["ph"]
+            if not re.match(r'(^[0-9]{10}$)', ph):
+                if not re.match(r'^91([0-9]{10})$', ph):
+                    messages.add_message(request, messages.ERROR, 'Invalid phone number.', extra_tags="edit")
+                    return redirect('recportal:profile', first_name, last_name)
+                else:
+                    candidate.ph = ph
+
+            email = data["email"]
+            if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",email):
+                messages.add_message(request, messages.ERROR, 'Invalid email address.', extra_tags="edit")
+                return redirect('recportal:profile', first_name, last_name)
+            else:
+                candidate.email = email
+
+            try:
+                candidate.skill1 = data['skill1']
+            except:
+                candidate.skill1 = ''
+            try:
+                candidate.skill2 = data['skill2']
+            except:
+                candidate.skill2 = ''
+            try:
+                candidate.about = data['about']
+            except:
+                candidate.about = ''
+
+        except Exception as err:
+            print(err)
+            messages.add_message(request, messages.ERROR, 'Essential data missing.', extra_tags="edit")
+            return redirect('recportal:profile', first_name, last_name)
+
+        print(data);
+        candidate.save()
+        messages.add_message(request, messages.INFO, 'Candidate successfully edited!', extra_tags="edit")
+        return redirect('recportal:profile', first_name, last_name)
+
+    else:
+        return JsonResponse({"message": "invalid request method."})
 
 @login_required
 def Home(request):

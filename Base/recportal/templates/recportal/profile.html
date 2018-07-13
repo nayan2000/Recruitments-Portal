@@ -16,32 +16,47 @@
       padding-left: 100px !important;
     }
   </style>
+  <script>
+    function editView() {
+        document.getElementById("name").innerHTML = "<b><i> First Name: </i></b><input type=\"text\" name=\"first_name\" form=\"edit_form\" value=\"{{candidate.first_name}}\" /><b><i> Last Name: </i></b><input type=\"text\" name=\"last_name\" form=\"edit_form\" value=\"{{candidate.last_name}}\" />";
+        document.getElementById("about").innerHTML = "<b> About: </b> <textarea id=\"about_textar\" name=\"about\" form=\"edit_form\" />";
+        document.getElementById("about_textar").defaultValue = "{{candidate.about}}";
+        document.getElementById("skill1").innerHTML = "<b> Skill 1: </b> <input type=\"text\" name=\"skill1\" form=\"edit_form\" value=\"{{candidate.skill1}}\" />";
+        document.getElementById("skill2").innerHTML = "<b> Skill 2: </b> <input type=\"text\" name=\"skill2\" form=\"edit_form\" value=\"{{candidate.skill2}}\" />";
+        document.getElementById("ph").innerHTML = "<b> Phone Number: </b> <input type=\"number\" name=\"ph\" form=\"edit_form\" value=\"{{candidate.ph}}\" />";
+        document.getElementById("email").innerHTML = "<b> Email Address: </b> <input type=\"email\" name=\"email\" form=\"edit_form\" value=\"{{candidate.email}}\" />";
+        document.getElementById("edit_button").innerHTML = "<input type=\"submit\" class=\"btn-large green\" form=\"edit_form\" value=\"update\" /><br><p>(refresh page to cancel)</p>";
+    }
+  </script>
 {% endblock %}
 
 {% block content %}
 
   <br>
   <div name="info" class="container">
+    <form method="post" action="{% url 'recportal:edit' candidate.first_name candidate.last_name %}" id="edit_form">
+      {% csrf_token %}
     <table>
 
       <tr>
-        <td class="center-align teal lighten-3" colspan="2"><h4><b><i>{{candidate.first_name}} {{candidate.last_name}}</i></b></h4></td>
+        <td class="center-align teal lighten-3" colspan="2" id="name"><h4><b><i>{{candidate.first_name}} {{candidate.last_name}}</i></b></h4></td>
       </tr>
 
       <tr>
-        <td rowspan="2" width="50%" class="center-align teal lighten-5"><b> About: </b><br>{{candidate.about}}</td>
-        <td class="center-align teal lighten-5"><b> Skill 1:</b>   {{candidate.skill1}}</td>
+        <td rowspan="2" width="50%" class="center-align teal lighten-5" id="about"><b> About: </b><br>{{candidate.about}}</td>
+        <td class="center-align teal lighten-5" id="skill1"><b> Skill 1:</b>   {{candidate.skill1}}</td>
       </tr>
 
       <tr>
-        <td class="center-align teal lighten-5"><b> Skill 2:</b>   {{candidate.skill2}}</td>
+        <td class="center-align teal lighten-5" id="skill2"><b> Skill 2:</b>   {{candidate.skill2}}</td>
       </tr>
 
       <tr>
-        <td class="center-align teal lighten-5"><b> Phone Number: </b>  {{candidate.ph}} </td>
-        <td class="center-align teal lighten-5"><b> Email Address: </b>  {{candidate.email}} </td>
+        <td class="center-align teal lighten-5" id="ph"><b> Phone Number: </b>  {{candidate.ph}} </td>
+        <td class="center-align teal lighten-5" id="email"><b> Email Address: </b>  {{candidate.email}} </td>
       </tr>
 
+    </form>
     </table>
   </div>
 
@@ -52,6 +67,20 @@
       <tr class="no_border">
         <td class="center-align"><a href="{% url 'recportal:pitch' first_name=candidate.first_name last_name=candidate.last_name %}" class="btn-large hoverable"> Pitch </a></td>
         <td class="center-align"><a href="{% url 'recportal:recommend' first_name=candidate.first_name last_name=candidate.last_name %}" class="btn-large hoverable"> Recommend </a></td>
+        <td class="center-align" id="edit_button"><a onclick="editView()" class="btn-large hoverable"> Edit </a></td>
+        {% if messages %}
+          {% for message in messages %}
+            <div class="center-align">
+            {% if forloop.counter == 1 %}
+              {% if message.tags == 'edit error' %}
+                <p class="red-text"><i> {{ message }} </i></p>
+              {% elif message.tags == 'edit info' %}
+                <p class="green-text"><i> {{ message }} </i></p>
+              {% endif %}
+            {% endif %}
+            </div>
+          {% endfor %}
+        {% endif %}
       </tr>
       {% if messages %}
         <tr class="no_border">
