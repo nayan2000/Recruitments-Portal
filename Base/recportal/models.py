@@ -45,6 +45,10 @@ class Senior(models.Model):
                     payload[recommendation.candidate].append((recommendation.recommending_senior, recommendation.reason))
         return payload
 
+    @property
+    def active_recommendations_count(self):
+        return len(self.getActiveRecommendations())
+
     def getCandidates(self):
         payload = set()
         for recommendation in self.user.recommended.all():
