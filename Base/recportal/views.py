@@ -139,12 +139,12 @@ def EditCandidate(request, first_name, last_name):
         except Exception as err:
             print(err)
             messages.add_message(request, messages.ERROR, 'Essential data missing.', extra_tags="edit")
-            return redirect('recportal:profile', first_name, last_name)
+            return redirect('recportal:profile', candidate.first_name, candidate.last_name)
 
         print(data);
         candidate.save()
         messages.add_message(request, messages.INFO, 'Candidate successfully edited!', extra_tags="edit")
-        return redirect('recportal:profile', first_name, last_name)
+        return redirect('recportal:profile', candidate.first_name, candidate.last_name)
 
     else:
         return JsonResponse({"message": "invalid request method."})
