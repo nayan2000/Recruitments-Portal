@@ -123,7 +123,7 @@
         <td> Team </td>
         <td> Task </td>
         <td> Senior </td>
-        <td> Approved </td>
+        <td> Pitched </td>
       </tr>
 
       {% for assessment in candidate.assessments.all %}
@@ -131,7 +131,7 @@
         <td> {{assessment.team}} </td>
         <td> {% if assessment.task %} (ID={{assessment.task.id}}) {% endif %} {{assessment.task}} </td>
         <td> {{assessment.senior}} </td>
-        <td> {{assessment.approved}} </td>
+        <td> {{assessment.pitched}} </td>
       </tr>
       {% endfor %}
     </table>

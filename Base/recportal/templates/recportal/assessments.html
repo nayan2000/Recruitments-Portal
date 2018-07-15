@@ -18,7 +18,7 @@
       <td class="light-blue lighten-1"><b> Candidate </b></td>
       <td class="light-blue lighten-1"><b> Senior </b></td>
       <td class="light-blue lighten-1"><b> Potential Team </b></td>
-      <td class="light-blue lighten-1"><b> Approved </b></td>
+      <td class="light-blue lighten-1"><b> Pitched </b></td>
       <td class="light-blue lighten-2"><b> Title </b></td>
       <td class="light-blue lighten-2"><b> Description </b></td>
       <td class="light-blue lighten-2"><b> Issuing Date </b></td>
@@ -31,7 +31,7 @@
       <td> <a href="{% url 'recportal:profile' assessment.candidate.first_name assessment.candidate.last_name %}"> {{assessment.candidate.first_name}} {{assessment.candidate.last_name}} </a> </td>
       <td> {{assessment.senior.first_name}} {{assessment.senior.last_name}} </td>
       <td> {{assessment.team}} </td>
-      <td> {{assessment.approved}} </td>
+      <td> {{assessment.pitched}} </td>
       <td> {{assessment.task.title}} </td>
       <td> {{assessment.task.description}} </td>
       <td> {{assessment.task.issuing_date}} </td>
