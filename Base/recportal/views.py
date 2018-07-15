@@ -56,7 +56,6 @@ def Candidates(request):
                 about = ''
 
         except Exception as err:
-            print(err)
             messages.add_message(request, messages.ERROR, 'Essential data missing.')
             return redirect('recportal:candidates')
 
@@ -138,11 +137,9 @@ def EditCandidate(request, first_name, last_name):
                 candidate.about = ''
 
         except Exception as err:
-            print(err)
             messages.add_message(request, messages.ERROR, 'Essential data missing.', extra_tags="edit")
             return redirect('recportal:profile', candidate.first_name, candidate.last_name)
 
-        print(data);
         candidate.save()
         messages.add_message(request, messages.INFO, 'Candidate successfully edited!', extra_tags="edit")
         return redirect('recportal:profile', candidate.first_name, candidate.last_name)
@@ -225,7 +222,6 @@ def AssessCandidate(request, first_name, last_name):
         # then, make sure that all of the data is valid and create the new assessment
         possible_teams = ['App Dev', 'Backend', 'Frontend', 'Graphics', 'Video']
         try:
-            print(data)
             team = data['team']
             if team not in possible_teams:
                 messages.add_message(request, messages.ERROR, 'Assessment cancelled due to providing an invalid team. Stay away from dev tools.', extra_tags="assessment")
@@ -305,7 +301,8 @@ def RecommendCandidate(request, first_name, last_name):
             rec = Recommendation.objects.create(reason=reason, recommending_senior=request.user, recommended_senior=senior, candidate=candidate)
         elif mode == "team":
             for senior in Senior.objects.filter(team=data["team"]):
-                Recommendation.objects.create(reason=reason, recommending_senior=request.user, recommended_senior=senior.user, candidate=candidate)
+                if senior != request.user.senior:
+                    Recommendation.objects.create(reason=reason, recommending_senior=request.user, recommended_senior=senior.user, candidate=candidate)
             rec = True
         if rec:
             messages.add_message(request, messages.INFO, 'Recommended successfully!', extra_tags="recommend")
