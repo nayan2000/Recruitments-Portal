@@ -65,7 +65,7 @@
   <div name="action" class="container">
     <table>
       <tr class="no_border">
-        <td class="center-align"><a href="{% url 'recportal:pitch' first_name=candidate.first_name last_name=candidate.last_name %}" class="btn-large hoverable"> Pitch </a></td>
+        <td class="center-align"><a href="{% url 'recportal:assess' first_name=candidate.first_name last_name=candidate.last_name %}" class="btn-large hoverable"> Assess </a></td>
         <td class="center-align"><a href="{% url 'recportal:recommend' first_name=candidate.first_name last_name=candidate.last_name %}" class="btn-large hoverable"> Recommend </a></td>
         <td class="center-align" id="edit_button"><a onclick="editView()" class="btn-large hoverable"> Edit </a></td>
         {% if messages %}
@@ -116,8 +116,8 @@
   <br>
   <br>
 
-  <div name="pitches" class="padded">
-    <h5> Existing Pitches: </h5>
+  <div name="assessments" class="padded">
+    <h5> Existing Assessments: </h5>
     <table>
       <tr>
         <td> Team </td>
@@ -126,12 +126,12 @@
         <td> Approved </td>
       </tr>
 
-      {% for pitch in candidate.pitches.all %}
+      {% for assessment in candidate.assessments.all %}
       <tr>
-        <td> {{pitch.team}} </td>
-        <td> {% if pitch.task %} (ID={{pitch.task.id}}) {% endif %} {{pitch.task}} </td>
-        <td> {{pitch.senior}} </td>
-        <td> {{pitch.approved}} </td>
+        <td> {{assessment.team}} </td>
+        <td> {% if assessment.task %} (ID={{assessment.task.id}}) {% endif %} {{assessment.task}} </td>
+        <td> {{assessment.senior}} </td>
+        <td> {{assessment.approved}} </td>
       </tr>
       {% endfor %}
     </table>
@@ -151,15 +151,15 @@
         <td> Rubric </td>
       </tr>
 
-      {% for pitch in candidate.pitches.all %}
-      {% if pitch.task %}
+      {% for assessment in candidate.assessments.all %}
+      {% if assessment.task %}
       <tr>
-        <td>  (ID={{pitch.task.id}}) {{pitch.task}} </td>
-        <td> {{ pitch.task.issuing_date }} </td>
-        <td> {{ pitch.task.due_date }}</td>
-        <td> {{ pitch.task.completion_date }}</td>
-        <td> {{pitch.task.description}} {% if not pitch.task.due_date %} (casual) {% endif %} </td>
-        <td> {% if pitch.task.rubric %} <a href="{% url 'recportal:download' filename=pitch.task.rubric.name %}"> {{pitch.task.rubric.name}} </a> {% else %} None {% endif %} </td>
+        <td>  (ID={{assessment.task.id}}) {{assessment.task}} </td>
+        <td> {{ assessment.task.issuing_date }} </td>
+        <td> {{ assessment.task.due_date }}</td>
+        <td> {{ assessment.task.completion_date }}</td>
+        <td> {{assessment.task.description}} {% if not assessment.task.due_date %} (casual) {% endif %} </td>
+        <td> {% if assessment.task.rubric %} <a href="{% url 'recportal:download' filename=assessment.task.rubric.name %}"> {{assessment.task.rubric.name}} </a> {% else %} None {% endif %} </td>
       </tr>
       {% endif %}
       {% endfor %}

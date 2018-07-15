@@ -1,12 +1,12 @@
 {% extends 'recportal/base.html' %}
 
 {% block title %}
-  <title> Recruitments Portal -- My Pitches </title>
+  <title> Recruitments Portal -- My Assessments </title>
 {% endblock %}
 
 {% block content %}
   <div class="container" >
-    <h3 class="center-align"> My Pitches </h3>
+    <h3 class="center-align"> My Assessments </h3>
     {% for message in messages %}{% if forloop.counter == 1 %}
         {% if message.tags == 'info' %}
           <p class="green-text center-align"><i> {{ message }} </i></p>
@@ -16,7 +16,7 @@
     <table>
 
       <tr>
-        <td colspan="3" class="center-align light-blue lighten-1"><b> Pitch Details </b></td>
+        <td colspan="3" class="center-align light-blue lighten-1"><b> Assessment Details </b></td>
         <td colspan="5" class="center-align light-blue lighten-2"><b> Task Details </b></td>
       </tr>
 
@@ -31,23 +31,23 @@
         <td class="light-blue lighten-2"><b> Date of Completion </b></td>
       </tr>
 
-      {% for pitch in mypitches %}
+      {% for assessment in myassessments %}
       <tr class="light-blue lighten-4">
-        <td> <a href="{% url 'recportal:profile' pitch.candidate.first_name pitch.candidate.last_name %}"> {{pitch.candidate.first_name}} {{pitch.candidate.last_name}} </a> </td>
-        <td> {{pitch.team}} </td>
-        <td> {{pitch.approved}} </td>
-        <td> {{pitch.task.title}} </td>
-        <td> {{pitch.task.description}} </td>
-        <td> {{pitch.task.issuing_date}} </td>
-        <td> {{pitch.task.due_date}} </td>
+        <td> <a href="{% url 'recportal:profile' assessment.candidate.first_name assessment.candidate.last_name %}"> {{assessment.candidate.first_name}} {{assessment.candidate.last_name}} </a> </td>
+        <td> {{assessment.team}} </td>
+        <td> {{assessment.approved}} </td>
+        <td> {{assessment.task.title}} </td>
+        <td> {{assessment.task.description}} </td>
+        <td> {{assessment.task.issuing_date}} </td>
+        <td> {{pitassessmentch.task.due_date}} </td>
 
-              {% if pitch.task.completion_date %}
+              {% if assessment.task.completion_date %}
                 <td class="green-text">
-                  {{pitch.task.completion_date}} {% if pitch.task.is_overdue %}<br><p class="red-text"> (overdue) </p>{% endif %}
+                  {{assessment.task.completion_date}} {% if assessment.task.is_overdue %}<br><p class="red-text"> (overdue) </p>{% endif %}
                </td>
-              {% elif pitch.task.is_overdue %}
+              {% elif assessment.task.is_overdue %}
                 <td class="red-text"> overdue </td>
-              {% elif pitch.task.is_ongoing %}
+              {% elif assessment.task.is_ongoing %}
                 <td> ongoing </td>
               {% else %}
                 <td> error, please notify the dev </td>
@@ -65,7 +65,7 @@
     <h3 class="center-align"> Update Tasks </h3>
     <br>
     <div class="grey">
-      <form method="post" action="{% url 'recportal:mypitches' %}" id="update">
+      <form method="post" action="{% url 'recportal:myassessments' %}" id="update">
         {% csrf_token %}
           <table>
 
@@ -73,8 +73,8 @@
               <td> Candidate: </td>
               <td>
                 <select class="browser-default" form="update" name="candidate" required>
-                  {% for pitch in mypitches %}
-                    <option value="{{pitch.candidate.first_name}}-{{pitch.candidate.last_name}}"> {{pitch.candidate.first_name}} {{pitch.candidate.last_name}} -- {{pitch.task.title}} </option>
+                  {% for assessment in myassessments %}
+                    <option value="{{assessment.candidate.first_name}}-{{assessment.candidate.last_name}}"> {{assessment.candidate.first_name}} {{assessment.candidate.last_name}} -- {{assessment.task.title}} </option>
                   {% endfor %}
                 </select>
               </td>
@@ -86,7 +86,7 @@
             </tr>
 
             <tr>
-              <td> Approve Pitch: </td>
+              <td> Approve Assessment: </td>
               <td>
                 <label>
                   <input type="checkbox" name="pitched" value="True" />

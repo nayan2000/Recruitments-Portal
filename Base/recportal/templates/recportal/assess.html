@@ -1,7 +1,7 @@
 {% extends 'recportal/base.html' %}
 
 {% block title %}
-  <title> Recruitments Portal -- Pitch </title>
+  <title> Recruitments Portal -- Assess </title>
   <style>
     .desc
       {
@@ -16,16 +16,16 @@
 {% block content %}
 <br>
 <div class="container">
-  <form method="post" action="{% url 'recportal:pitch' first_name=candidate.first_name last_name=candidate.last_name %}" id="pitch">
+  <form method="post" action="{% url 'recportal:assess' first_name=candidate.first_name last_name=candidate.last_name %}" id="pitch">
     {% csrf_token %}
-    <h3 class="center-align"> Pitch {{candidate.first_name}} {{candidate.last_name}} </h3>
+    <h3 class="center-align"> Assess {{candidate.first_name}} {{candidate.last_name}} </h3>
     <br>
     <table>
       <tr>
         <td class="teamtd"> <label for="team"> Team: </label> </td>
         <td>
             <div class="input-field">
-              <select form="pitch" name="team" class="browser-default grey lighten-4" required>
+              <select form="assess" name="team" class="browser-default grey lighten-4" required>
                 <option value="App Dev">App Dev</option>
                 <option value="Backend">Backend</option>
                 <option value="Frontend">Frontend</option>
@@ -57,7 +57,7 @@
       </tr>
       <tr>
         <td> <label for="description"> Description: </label> </td>
-        <td> <textarea name="description" maxlength="100" class="desc" form="pitch" required></textarea> </td>
+        <td> <textarea name="description" maxlength="100" class="desc" form="assess" required></textarea> </td>
       </tr>
       <tr>
         <td> <label for="rubric"> Rubric (optional): </label> </td>
@@ -68,7 +68,7 @@
     <br><br>
 
     <div class="center-align">
-      <input type="submit" value="pitch!" class="btn-large yellow lighten-1 grey-text">
+      <input type="submit" value="Create Assessment" class="btn-large yellow lighten-1 grey-text">
     </div>
 
     <br>
