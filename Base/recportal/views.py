@@ -24,6 +24,7 @@ def Candidates(request):
         return render(request, 'recportal/candidates.html', context)
 
     if request.method == 'POST':
+        # for when the candidate is being updated
         data = request.POST
         try:
             first_name = data['first_name'].replace(' ', '_')
@@ -59,7 +60,7 @@ def Candidates(request):
             messages.add_message(request, messages.ERROR, 'Essential data missing.')
             return redirect('recportal:candidates')
 
-        Candidate.objects.create(first_name=first_name, last_name=last_name, ph=ph, email=email, skill1=skill1, skill2=skill2, about=about ,approved=False)
+        Candidate.objects.create(first_name=first_name, last_name=last_name, ph=ph, email=email, skill1=skill1, skill2=skill2, about=about ,pitched=False)
         messages.add_message(request, messages.INFO, 'Candidate successfully created!')
         return redirect('recportal:candidates')
 
@@ -174,59 +175,59 @@ def MyCandidates(request):
 
 
 @login_required
-def MyPitches(request):
+def MyAssessments(request):
 
     if request.method == 'GET':
         context = {}
-        context['mypitches'] = request.user.pitches.all()
-        return render(request, 'recportal/mypitches.html', context)
+        context['myassessments'] = request.user.assessments.all()
+        return render(request, 'recportal/myassessments.html', context)
 
     if request.method == 'POST':
         data = request.POST
         candidate = get_object_or_404(Candidate, first_name=data['candidate'].split('-')[0], last_name=data['candidate'].split('-')[1])
-        pitch = get_object_or_404(Pitch, candidate=candidate, senior=request.user)
-        pitch.task.completion_date = datetime.datetime.strptime(data['doc'], '%Y-%m-%d').date()
+        assessment = get_object_or_404(Assessment, candidate=candidate, senior=request.user)
+        assessment.task.completion_date = datetime.datetime.strptime(data['doc'], '%Y-%m-%d').date()
         try:
-            if data['approval']:
-                pitch.approved = True
+            if data['pitched']:
+                assessment.pitched = True
         except:
             pass
-        pitch.task.save()
-        pitch.save()
+        assessment.task.save()
+        assessment.save()
         messages.add_message(request, messages.INFO, 'Task updated successfully!')
-        return redirect('recportal:mypitches')
+        return redirect('recportal:myassessments')
 
     else:
         return JsonResponse({'error_message':'Invalid request method.'})
 
 
 @login_required
-def PitchCandidate(request, first_name, last_name):
-    ''' the view for the form to pitch candidates '''
+def AssessCandidate(request, first_name, last_name):
+    ''' the view for the form to assess candidates '''
 
     if request.method == 'GET':
         context = {}
         context['candidate'] = get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
-        return render(request, 'recportal/pitch.html', context)
+        return render(request, 'recportal/assess.html', context)
 
     if request.method == 'POST':
         # don't forget to make a verification script
         data = request.POST
-        # first, don't let the same senior pitch the same candidate
+        # first, don't let the same senior assess the same candidate more than once
         try:
             candidate= get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
-            p = Pitch.objects.get(candidate=candidate, senior=request.user)
+            p = Assessment.objects.get(candidate=candidate, senior=request.user)
             if p:
-                messages.add_message(request, messages.ERROR, 'You have already pitched this candidate', extra_tags="pitch")
+                messages.add_message(request, messages.ERROR, 'You have already assessed this candidate', extra_tags="assessment")
             return redirect('recportal:profile', first_name=first_name, last_name=last_name)
         except:
             pass
-        # then, make sure that all of the data is valid and create the new pitch
+        # then, make sure that all of the data is valid and create the new assessment
         possible_teams = ['App Dev', 'Backend', 'Frontend', 'Graphics', 'Video']
         try:
             team = data['team']
             if team not in possible_teams:
-                messages.add_message(request, messages.ERROR, 'Pitch cancelled due to providing an invalid team. Stay away from dev tools.', extra_tags="pitch")
+                messages.add_message(request, messages.ERROR, 'Assessment cancelled due to providing an invalid team. Stay away from dev tools.', extra_tags="assessment")
                 return redirect('recportal:profile', first_name=first_name, last_name=last_name)
             title = data['title']
             desc = data['description']
@@ -245,16 +246,16 @@ def PitchCandidate(request, first_name, last_name):
                 task = Task.objects.create(title=title, description=desc, issuing_date=isd, due_date=dd, candidate=candidate, rubric=rubric)
             except:
                 task = Task.objects.create(title=title, description=desc, issuing_date=isd, candidate=candidate, rubric=rubric)
-            pitch = Pitch.objects.create(team=team, task=task, senior=request.user ,candidate=candidate)
-            if pitch:
-                messages.add_message(request, messages.INFO, 'Pitched successfully!', extra_tags="pitch")
+            assessment = Assessment.objects.create(team=team, task=task, senior=request.user ,candidate=candidate)
+            if assessment:
+                messages.add_message(request, messages.INFO, 'Assessment added successfully!', extra_tags="assessment")
 
             # one last thing to do is to self recommend the candidate so that s/he is in 'MyCandidates'
             # if they previously accepted a recommendation, just ignore it, otherwise make one
             try:
                 Recommendation.objects.get(candidate=candidate, recommended_senior=request.user)
             except:
-                Recommendation.objects.create(status=True, reason='Pitched by self', candidate=candidate, recommending_senior=request.user, recommended_senior=request.user )
+                Recommendation.objects.create(status=True, reason='Assessed by self', candidate=candidate, recommending_senior=request.user, recommended_senior=request.user )
 
             # finally, redirect them to the profile page along with the message
             return redirect('recportal:profile', first_name=first_name, last_name=last_name)
@@ -266,13 +267,13 @@ def PitchCandidate(request, first_name, last_name):
         return JsonResponse({'error_message':'Invalid request method.'})
 
 @login_required
-def Pitches(request):
-    ''' A simple view to render the pitches page where all created pitches are visible '''
+def Assessments(request):
+    ''' A simple view to render the assessments page where all created assessments are visible '''
 
     if request.method == 'GET':
         context = {}
-        context['pitches'] = Pitch.objects.all()
-        return render(request, 'recportal/pitches.html', context)
+        context['assessments'] = Assessment.objects.all()
+        return render(request, 'recportal/assessments.html', context)
 
     else:
         return JsonResponse({'error_message':'Invalid request method.'})

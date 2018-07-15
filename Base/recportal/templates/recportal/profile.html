@@ -87,9 +87,9 @@
               <td>
             {% for message in messages %}{% if forloop.counter == 1 %}
               <div class="center-align">
-                {% if message.tags == 'pitch error' %}
+                {% if message.tags == 'assessment error' %}
                   <p class="red-text"><i> {{ message }} </i></p>
-                {% elif message.tags == 'pitch info' %}
+                {% elif message.tags == 'assessment info' %}
                   <p class="green-text"><i> {{ message }} </i></p>
                 {% endif %}
               </div>
