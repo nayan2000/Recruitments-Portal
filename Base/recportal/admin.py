@@ -10,7 +10,7 @@ class SeniorInline(admin.TabularInline):
 
 class PitchInline(admin.TabularInline):
     extra = 1
-    model = Pitch
+    model = Assessment
 
 class UserAdminExtension(UserAdmin):
     inlines = [SeniorInline]
