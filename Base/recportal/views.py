@@ -225,6 +225,7 @@ def AssessCandidate(request, first_name, last_name):
         # then, make sure that all of the data is valid and create the new assessment
         possible_teams = ['App Dev', 'Backend', 'Frontend', 'Graphics', 'Video']
         try:
+            print(data)
             team = data['team']
             if team not in possible_teams:
                 messages.add_message(request, messages.ERROR, 'Assessment cancelled due to providing an invalid team. Stay away from dev tools.', extra_tags="assessment")
