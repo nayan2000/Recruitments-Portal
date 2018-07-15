@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 class Senior(models.Model):
     ''' A user extention model for the seniors of the department who would
-        be using this portal. It is associated with the Pitch model through a
+        be using this portal. It is associated with the Assessment model through a
         many-to-one relation.
         Note:
                 1. Team must only be either:
@@ -58,7 +58,7 @@ class Senior(models.Model):
 
 class Candidate(models.Model):
     ''' The stand-alone model for each candidate appearing for the department's
-        recruitments. It is associated with the Pitch model as a one-to-one relation.
+        recruitments. It is associated with the Assessment model as a one-to-one relation.
         recommended is for the recommendations feature'''
     first_name = models.CharField(max_length=50, null=False)
     last_name = models.CharField(max_length=50, null=False)
@@ -67,7 +67,7 @@ class Candidate(models.Model):
     about = models.TextField(default='', blank=True)
     skill1 = models.CharField(max_length=100, default='', blank=True)
     skill2 = models.CharField(max_length=100, default='', blank=True)
-    approved = models.BooleanField(default=False, blank=True)
+    pitched = models.BooleanField(default=False, blank=True) # approved by the DVM as a whole
 
     class meta():
         ordering = ['first_name', 'last_name']
@@ -79,9 +79,9 @@ class Candidate(models.Model):
         string = "{} {}".format(self.first_name, self.last_name)
         return string
 
-class Pitch(models.Model):
+class Assessment(models.Model):
     ''' Whenever a candidate appears for recruitments they are surveyed by a senior
-        department member and then if they are suitable, then they are "pitched" by
+        department member and then if they are suitable, then they are assessd by
         that senior. During this time they are given a task and usually a deadline.
         This model accounts for these parameters. This model is in a way a mapping
         between seniors and the candidates they are reviewing.
@@ -91,8 +91,10 @@ class Pitch(models.Model):
             to a comprehensive approval by the department, i.e. it is not the same as
             candidate.approved . This should be given after the completion of the task.
 
-            Each senior - candidate relation is models via. a pitch and multiple
-            pitches would most-likely exist per candidate and per senior.
+            Each senior - candidate relation is represented via. an assessment and multiple
+            assessments would most-likely exist per candidate and per senior.
+
+            However, each senior can only assess a particular candidate only once.
 
             Also, again, team must only be either:
                 a)  Backend
@@ -102,9 +104,9 @@ class Pitch(models.Model):
                 e)  Video '''
     team = models.CharField(max_length=10, default='None', blank=True)
     task = models.OneToOneField('recportal.Task', null=True, blank=True, on_delete=models.CASCADE)
-    senior = models.ForeignKey(User, related_name='pitches', null=False, on_delete=models.CASCADE)
-    candidate = models.ForeignKey('recportal.Candidate', related_name='pitches', null=False, on_delete=models.CASCADE)
-    approved = models.BooleanField(default=False, blank=True)
+    senior = models.ForeignKey(User, related_name='assessments', null=False, on_delete=models.CASCADE)
+    candidate = models.ForeignKey('recportal.Candidate', related_name='assessments', null=False, on_delete=models.CASCADE)
+    pitched = models.BooleanField(default=False, blank=True) # approved by the assessing candidate
 
     class meta():
         order_with_respect_to = 'candidate'
@@ -116,7 +118,7 @@ class Pitch(models.Model):
 
 class Task(models.Model):
     ''' This model accounts for the task assigned by the senior to the candidate
-        and is in a way an extention of the Pitch model. '''
+        and is in a way an extention of the Assessment model. '''
     title = models.CharField(max_length=50, null=False)
     candidate = models.ForeignKey(Candidate, related_name="tasks", null=False, blank=False, on_delete=models.CASCADE)
     description = models.TextField(max_length=100, null=False)
