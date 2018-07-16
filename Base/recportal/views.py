@@ -181,14 +181,15 @@ def MyAssessments(request):
 
     if request.method == 'POST':
         data = request.POST
+        files = request.FILES
         candidate = get_object_or_404(Candidate, first_name=data['candidate'].split('-')[0], last_name=data['candidate'].split('-')[1])
         assessment = get_object_or_404(Assessment, candidate=candidate, senior=request.user)
-        assessment.task.completion_date = datetime.datetime.strptime(data['doc'], '%Y-%m-%d').date()
-        try:
-            if data['pitched']:
-                assessment.pitched = True
-        except:
-            pass
+        if data["doc"]:
+            assessment.task.completion_date = datetime.datetime.strptime(data['doc'], '%Y-%m-%d').date()
+        if "pitched" in data.keys():
+            assessment.pitched = True
+        if files["rubric"]:
+            assessment.task.rubric = files["rubric"]
         assessment.task.save()
         assessment.save()
         messages.add_message(request, messages.INFO, 'Task updated successfully!')
@@ -210,6 +211,7 @@ def AssessCandidate(request, first_name, last_name):
     if request.method == 'POST':
         # don't forget to make a verification script
         data = request.POST
+        files = request.FILES
         # first, don't let the same senior assess the same candidate more than once
         try:
             candidate= get_object_or_404(Candidate, first_name=first_name, last_name=last_name)
@@ -231,8 +233,8 @@ def AssessCandidate(request, first_name, last_name):
 
             isd = datetime.datetime.strptime(data['issuing_date'], '%Y-%m-%d').date()
 
-            if "rubric" in data.keys():
-                rubric = data["rubric"]
+            if "rubric" in files.keys():
+                rubric = files["rubric"]
                 # no extra security measures are taken to check the type of the file uploaded
                 # since this webapp is closed only to member of a department, there is no need for it.
             else:

@@ -11,7 +11,7 @@
 
     <tr>
       <td colspan="4" class="center-align light-blue lighten-1"><b> Assessment Details </b></td>
-      <td colspan="5" class="center-align light-blue lighten-2"><b> Task Details </b></td>
+      <td colspan="6" class="center-align light-blue lighten-2"><b> Task Details </b></td>
     </tr>
 
     <tr>
@@ -24,6 +24,9 @@
       <td class="light-blue lighten-2"><b> Issuing Date </b></td>
       <td class="light-blue lighten-2"><b> Due Date </b></td>
       <td class="light-blue lighten-2"><b> Date of Completion </b></td>
+      <td class="light-blue lighten-2"><b> Rubric </b></td>
+
+
     </tr>
 
     {% for assessment in assessments %}
@@ -49,7 +52,8 @@
               <td> error, please notify the dev </td>
             {% endif %}
 
-      </td>
+      <td> {% if assessment.task.rubric %} <a href="{% url 'recportal:download' filename=assessment.task.rubric.name %}"> {{assessment.task.rubric.name}} </a> {% else %} None {% endif %} </td>
+
     </tr>
     {% endfor %}
   </table>

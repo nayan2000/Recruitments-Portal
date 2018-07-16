@@ -159,7 +159,7 @@
         <td> {{ assessment.task.due_date }}</td>
         <td> {{ assessment.task.completion_date }}</td>
         <td> {{assessment.task.description}} {% if not assessment.task.due_date %} (casual) {% endif %} </td>
-        <td> {% if assessment.task.rubric %} <a href="{% url 'recportal:download' filename=assessment.task.rubric.name %}"> {{assessment.task.rubric.name}} </a> {% else %} None {% endif %} </td>
+        <td> {% if assessment.task.rubric %} <a href="{% url 'recportal:download' filename=assessment.task.rubric.name %}"> {{assessment.task.rubric_name}} </a> {% else %} None {% endif %} </td>
       </tr>
       {% endif %}
       {% endfor %}

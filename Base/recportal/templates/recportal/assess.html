@@ -16,7 +16,7 @@
 {% block content %}
 <br>
 <div class="container">
-  <form method="post" action="{% url 'recportal:assess' first_name=candidate.first_name last_name=candidate.last_name %}" id="assess">
+  <form method="post" action="{% url 'recportal:assess' first_name=candidate.first_name last_name=candidate.last_name %}" id="assess" enctype="multipart/form-data">
     {% csrf_token %}
     <h3 class="center-align"> Assess {{candidate.first_name}} {{candidate.last_name}} </h3>
     <br>
