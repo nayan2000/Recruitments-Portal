@@ -188,7 +188,7 @@ def MyAssessments(request):
             assessment.task.completion_date = datetime.datetime.strptime(data['doc'], '%Y-%m-%d').date()
         if "pitched" in data.keys():
             assessment.pitched = True
-        if files["rubric"]:
+        if "rubric" in files.keys():
             assessment.task.rubric = files["rubric"]
         assessment.task.save()
         assessment.save()
