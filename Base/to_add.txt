@@ -1,2 +1,0 @@
-next: 
-edit candidate via. same candidate form (if first name and last name match)
